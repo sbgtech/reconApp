@@ -13,6 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.app.recon",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "We need access to Bluetooth to communicate with devices.",
+        "NSLocationWhenInUseUsageDescription": "We need access to location for Bluetooth scanning."
+      },
       "supportsTablet": true
     },
     "android": {
@@ -20,10 +25,23 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.reconmobile",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["react-native-ble-plx"],
+    "extra": {
+      "eas": {
+        "projectId": "b2ecd618-d615-4481-bc37-42915267f220"
+      }
     }
   }
 }
