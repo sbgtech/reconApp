@@ -1,19 +1,21 @@
 {
   "expo": {
-    "name": "MyBleApp",
-    "slug": "MyBleApp",
+    "name": "RECON Mobile",
+    "slug": "recon-mobile",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "platforms": ["ios", "android"],
+    "orientation": "default",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "label": "RECON Mobile",
     "ios": {
-      "bundleIdentifier": "com.app.recon",
+      "bundleIdentifier": "com.app.welltimer",
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "We need access to Bluetooth to communicate with devices.",
         "NSLocationWhenInUseUsageDescription": "We need access to location for Bluetooth scanning."
@@ -21,10 +23,6 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "edgeToEdgeEnabled": true,
       "package": "com.reconmobile",
       "permissions": [
