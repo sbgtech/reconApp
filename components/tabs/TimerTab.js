@@ -76,8 +76,12 @@ const TimerTab = (props) => {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       enableResetScrollToCoords={false}
+      enableOnAndroid={true}
+      contentContainerStyle={{ flexGrow: 1 }}
+      extraHeight={100}
+      enableAutomaticScroll={true}
     >
-      <View style={styles.container}>
+      <View style={{ paddingBottom: 25 }}>
         <RefreshBtn onPress={() => onRefreshTimer()} />
         <View style={styles.timersContainer(width)}>
           <Timer

@@ -263,7 +263,7 @@ export const styles = {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    gap: width > 600 ? 8 : 18,
+    gap: width > 600 ? 8 : 16,
     // padding: width > 600 ? 8  : 8 ,
   },
   // Timer.js
@@ -271,7 +271,7 @@ export const styles = {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: width > 600 ? 6 : 8,
+    gap: width > 600 ? 6 : 5,
     // width: "auto",
   },
   // Timer.js

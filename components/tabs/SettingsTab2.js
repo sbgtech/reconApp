@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
   Dimensions,
   StyleSheet,
-  Platform
+  Platform,
 } from "react-native";
 import { styles } from "./style/styles";
 import ButtonUI from "../ButtonUI";
@@ -1788,11 +1788,14 @@ const SettingsTab2 = (props) => {
 
   return (
     <KeyboardAwareScrollView
+      extraScrollHeight={135} // Space above the keyboard
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
-      extraScrollHeight={Platform.OS === 'ios' ? 80 : 0}
       enableResetScrollToCoords={false}
       enableOnAndroid={true}
+      contentContainerStyle={{ flexGrow: 1 }}
+      extraHeight={100}
+      enableAutomaticScroll={true}
     >
       <RefreshBtn onPress={() => onRefreshSettings()} />
       <View style={styles.valveContainer}>

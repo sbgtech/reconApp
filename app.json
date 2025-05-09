@@ -1,16 +1,17 @@
 {
   "expo": {
     "name": "RECON Mobile",
-    "slug": "recon-mobile",
+    "slug": "MyBleApp",
     "version": "1.0.0",
     "platforms": ["ios", "android"],
     "orientation": "default",
     "icon": "./assets/logo.png",
+    "scheme": "MyBleApp",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "label": "RECON Mobile",
