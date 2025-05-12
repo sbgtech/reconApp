@@ -90,7 +90,8 @@ const Timer = ({
       const { LSB, MSB } = unpackFloatToRegister(totalSeconds);
       const arr = JSON.stringify([2, address1, LSB, address2, MSB]);
       const buffer = Buffer.from(arr + "\n", "utf-8");
-      connectedDevice?.writeCharacteristicWithResponseForService(
+      fetchDataTimer();
+      await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -101,7 +102,6 @@ const Timer = ({
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
-      fetchDataTimer();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",

@@ -6,12 +6,11 @@
     "platforms": ["ios", "android"],
     "orientation": "default",
     "icon": "./assets/logo.png",
-    "scheme": "MyBleApp",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "label": "RECON Mobile",

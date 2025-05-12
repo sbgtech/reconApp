@@ -818,6 +818,7 @@ const SettingsTab2 = (props) => {
       return; // Exit the function if validation fails
     }
     try {
+      fetchDataSettings();
       const arr = JSON.stringify([
         3,
         111,
@@ -831,7 +832,7 @@ const SettingsTab2 = (props) => {
       ]);
       console.log("index is ", settings.productionMethodIndex);
       const buffer = Buffer.from(arr + "\n", "utf-8");
-      props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await props.connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -842,7 +843,6 @@ const SettingsTab2 = (props) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
-      fetchDataSettings();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -874,6 +874,7 @@ const SettingsTab2 = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           122,
@@ -886,7 +887,7 @@ const SettingsTab2 = (props) => {
           Number(settings.hiLoDelay),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -897,7 +898,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -927,6 +927,7 @@ const SettingsTab2 = (props) => {
       return; // Exit the function if validation fails
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           133,
@@ -947,7 +948,7 @@ const SettingsTab2 = (props) => {
           Number(settings.pidLL),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -958,7 +959,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -980,6 +980,7 @@ const SettingsTab2 = (props) => {
       return; // Exit the function if validation fails
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           141,
@@ -990,7 +991,7 @@ const SettingsTab2 = (props) => {
           settings.BValveTwinIndex,
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1001,7 +1002,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1036,6 +1036,7 @@ const SettingsTab2 = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           159,
@@ -1046,7 +1047,7 @@ const SettingsTab2 = (props) => {
           Number(settings.receivedPressureMinPSI),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1057,7 +1058,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1098,6 +1098,7 @@ const SettingsTab2 = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           100,
@@ -1112,7 +1113,7 @@ const SettingsTab2 = (props) => {
           Number(settings.LPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1123,7 +1124,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1164,6 +1164,7 @@ const SettingsTab2 = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           103,
@@ -1178,7 +1179,7 @@ const SettingsTab2 = (props) => {
           Number(settings.CPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1189,7 +1190,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1230,6 +1230,7 @@ const SettingsTab2 = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           106,
@@ -1244,7 +1245,7 @@ const SettingsTab2 = (props) => {
           Number(settings.TPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await props.connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1255,7 +1256,6 @@ const SettingsTab2 = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1281,25 +1281,35 @@ const SettingsTab2 = (props) => {
 
   // Initial load, call fetchData function with the corresponding data
   useEffect(() => {
-    // fetcha data if the device is connected
-    if (props.connectedDevice) {
-      const cleanup = fetchDataSettings();
-      return () => cleanup; // Clean up subscription on component unmount or when device changes
-    }
+    let isMounted = true;
+    const fetchData = async () => {
+      if (props.connectedDevice && isMounted) {
+        await fetchDataSettings();
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // Prevent state update after unmount
+    };
   }, [props.connectedDevice]);
 
   // function run when clicking on refresh button
   const onRefreshSettings = async () => {
     try {
-      // call function to send request to device to get data
-      await Receive.sendReqToGetData(props.connectedDevice, 2);
-      // start receiving data
-      await Receive.SettingsReceivedData(
+      // Clear previous state for actual refresh
+      dispatchSettings(initialSettingsState);
+      const dataPromise = Receive.SettingsReceivedData(
         props.connectedDevice,
-        dispatchSettings, // Replace all individual setters with just this
+        dispatchSettings,
         setLoading,
         setTitle
       );
+      // call function to send request to device to get data
+      await Receive.sendReqToGetData(props.connectedDevice, 2);
+      // start receiving data
+      await dataPromise;
     } catch (error) {
       console.error("Error during refresh:", error);
     }
@@ -1788,7 +1798,7 @@ const SettingsTab2 = (props) => {
 
   return (
     <KeyboardAwareScrollView
-      extraScrollHeight={135} // Space above the keyboard
+      extraScrollHeight={120} // Space above the keyboard
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       enableResetScrollToCoords={false}
@@ -1797,43 +1807,45 @@ const SettingsTab2 = (props) => {
       extraHeight={100}
       enableAutomaticScroll={true}
     >
-      <RefreshBtn onPress={() => onRefreshSettings()} />
-      <View style={styles.valveContainer}>
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          <Valve
-            connectedDevice={props.connectedDevice}
-            fetchDataSettings={fetchDataSettings}
-            title={"Valve A"}
-            status={settings.valveA === 1 ? true : false}
-            valve={"A"}
-          />
+      <View>
+        <RefreshBtn onPress={() => onRefreshSettings()} />
+        <View style={styles.valveContainer}>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Valve
+              connectedDevice={props.connectedDevice}
+              fetchDataSettings={fetchDataSettings}
+              title={"Valve A"}
+              status={settings.valveA === 1 ? true : false}
+              valve={"A"}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Valve
+              connectedDevice={props.connectedDevice}
+              fetchDataSettings={fetchDataSettings}
+              title={"Valve B"}
+              status={settings.valveB === 1 ? true : false}
+              valve={"B"}
+            />
+          </View>
         </View>
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          <Valve
-            connectedDevice={props.connectedDevice}
-            fetchDataSettings={fetchDataSettings}
-            title={"Valve B"}
-            status={settings.valveB === 1 ? true : false}
-            valve={"B"}
-          />
-        </View>
-      </View>
 
-      <View style={[styles.settingsWrapper, styles.marginBottomContainer]}>
-        <Text style={styles.valveTitle}>Controller configuration</Text>
-        <View style={styles.settingsSectionContainer(width)}>
-          <View style={styless.masonryContainer}>{renderColumns()}</View>
+        <View style={[styles.settingsWrapper, styles.marginBottomContainer]}>
+          <Text style={styles.valveTitle}>Controller configuration</Text>
+          <View style={styles.settingsSectionContainer(width)}>
+            <View style={styless.masonryContainer}>{renderColumns()}</View>
+          </View>
         </View>
+        <Loading loading={loading} title={title} />
       </View>
-      <Loading loading={loading} title={title} />
     </KeyboardAwareScrollView>
   );
 };

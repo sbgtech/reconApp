@@ -58,6 +58,10 @@ const WellStatus = (props) => {
 
   const fetchDataWellStatus = async () => {
     try {
+      // Clear previous state before fetching fresh data
+      dispatchWellStatus(initialWellStatusState);
+
+      // Request fresh data
       await Receive.WellStatusReceivedData(
         props.connectedDevice,
         dispatchWellStatus,
@@ -71,25 +75,37 @@ const WellStatus = (props) => {
 
   // Initial load, call WellStatusReceivedData function with the corresponding data
   useEffect(() => {
-    // fetcha data if the device is connected
-    if (props.connectedDevice) {
-      const cleanup = fetchDataWellStatus();
-      return () => cleanup; // Clean up subscription on component unmount or when device changes
-    }
+    let isMounted = true;
+
+    const fetchData = async () => {
+      if (props.connectedDevice && isMounted) {
+        await fetchDataWellStatus();
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // Prevent state update after unmount
+    };
   }, [props.connectedDevice]);
 
   // function run when clicking on refresh button
   const onRefreshWellStatus = async () => {
     try {
-      // call function to send request to device to get data
-      await Receive.sendReqToGetData(props.connectedDevice, 0);
-      // start receiving data
-      await Receive.WellStatusReceivedData(
+      // Clear previous state for actual refresh
+      dispatchWellStatus(initialWellStatusState);
+      const dataPromise = Receive.WellStatusReceivedData(
         props.connectedDevice,
         dispatchWellStatus,
         setLoading,
         setTitle
       );
+
+      // Request new data from the device
+      await Receive.sendReqToGetData(props.connectedDevice, 0);
+      await dataPromise;
+      // Receive and parse data again
     } catch (error) {
       console.error("Error during refresh:", error);
     }

@@ -50,8 +50,9 @@ const StatisticsTab = (props) => {
   // send "reset" to device to reset arrivals values
   const handleResetArrivals = async () => {
     try {
+      fetchDataStatistic();
       const buffer = Buffer.from("RST1 \n", "utf-8");
-      props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await props.connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -62,7 +63,6 @@ const StatisticsTab = (props) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
-      fetchDataStatistic();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -74,8 +74,9 @@ const StatisticsTab = (props) => {
   // send "reset" to device to reset missrun values
   const handleResetMissrun = async () => {
     try {
+      fetchDataStatistic();
       const buffer = Buffer.from("RST2 \n", "utf-8");
-      props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await props.connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -86,7 +87,6 @@ const StatisticsTab = (props) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
-      fetchDataStatistic();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -98,8 +98,9 @@ const StatisticsTab = (props) => {
   // send "reset" to device to reset onTime values
   const handleResetOnTime = async () => {
     try {
+      fetchDataStatistic();
       const buffer = Buffer.from("RST3 \n", "utf-8");
-      props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await props.connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -110,7 +111,6 @@ const StatisticsTab = (props) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
-      fetchDataStatistic();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -122,6 +122,9 @@ const StatisticsTab = (props) => {
   // function called in useEffect when load component to fetch data
   const fetchDataStatistic = async () => {
     try {
+      // Clear previous state before fetching fresh data
+      dispatchStatistics(initialStatisticsState);
+      // Request fresh data
       await Receive.StatisticsReceivedData(
         props.connectedDevice,
         dispatchStatistics,
@@ -135,25 +138,36 @@ const StatisticsTab = (props) => {
 
   // Initial load, call fetchData function with the corresponding data
   useEffect(() => {
-    // fetcha data if the device is connected
-    if (props.connectedDevice) {
-      const cleanup = fetchDataStatistic();
-      return () => cleanup; // Clean up subscription on component unmount or when device changes
-    }
+    let isMounted = true;
+
+    const fetchData = async () => {
+      if (props.connectedDevice && isMounted) {
+        await fetchDataStatistic();
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // Prevent state update after unmount
+    };
   }, [props.connectedDevice]);
 
   // function run when clicking on refresh button
   const onRefreshStatistic = async () => {
     try {
-      // call function to send request to device to get data
-      await Receive.sendReqToGetData(props.connectedDevice, 3);
-      // start receiving data
-      await Receive.StatisticsReceivedData(
+      // Clear previous state for actual refresh
+      dispatchStatistics(initialStatisticsState);
+      const dataPromise = Receive.StatisticsReceivedData(
         props.connectedDevice,
         dispatchStatistics,
         setLoading,
         setTitle
       );
+      // call function to send request to device to get data
+      await Receive.sendReqToGetData(props.connectedDevice, 3);
+      // start receiving data
+      await dataPromise;
     } catch (error) {
       console.error("Error during refresh:", error);
     }
