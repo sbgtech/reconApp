@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		9232AED87A647C16929E2978 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 956D5394B39BF94BD8E1B5E2 /* PrivacyInfo.xcprivacy */; };
-		A45348B82B3A40FF47BCD2A5 /* libPods-RECONMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B11D3BC6846EFD973808A12 /* libPods-RECONMobile.a */; };
+		65F9D7AB02E460E1C0CA9EEC /* libPods-RECONMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C41C899548A6CF619D612736 /* libPods-RECONMobile.a */; };
+		9613E7457D3BB6AFF2144518 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BF288C7791AB62309FE17E0A /* PrivacyInfo.xcprivacy */; };
+		ADD5842B05CF584B56A97219 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59E8D4D421CA7AB955D1722A /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		D1E527CB109DBA7A1576ADBE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE019AFFC8CC669E5D4126F /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,13 +20,13 @@
 		13B07F961A680F5B00A75B9A /* RECONMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RECONMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RECONMobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RECONMobile/Info.plist; sourceTree = "<group>"; };
-		232AA0B47C4DFC1FBEC14C9E /* Pods-RECONMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RECONMobile.debug.xcconfig"; path = "Target Support Files/Pods-RECONMobile/Pods-RECONMobile.debug.xcconfig"; sourceTree = "<group>"; };
-		4AE019AFFC8CC669E5D4126F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-RECONMobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		956D5394B39BF94BD8E1B5E2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = RECONMobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		9B11D3BC6846EFD973808A12 /* libPods-RECONMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RECONMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		59E8D4D421CA7AB955D1722A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-RECONMobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		84AA8BD0C011515015A19FE8 /* Pods-RECONMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RECONMobile.release.xcconfig"; path = "Target Support Files/Pods-RECONMobile/Pods-RECONMobile.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = RECONMobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		CF7E18729882A1A93D0202DD /* Pods-RECONMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RECONMobile.release.xcconfig"; path = "Target Support Files/Pods-RECONMobile/Pods-RECONMobile.release.xcconfig"; sourceTree = "<group>"; };
+		BF288C7791AB62309FE17E0A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RECONMobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C063E31F9EA95B564526256E /* Pods-RECONMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RECONMobile.debug.xcconfig"; path = "Target Support Files/Pods-RECONMobile/Pods-RECONMobile.debug.xcconfig"; sourceTree = "<group>"; };
+		C41C899548A6CF619D612736 /* libPods-RECONMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RECONMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = RECONMobile/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* RECONMobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RECONMobile-Bridging-Header.h"; path = "RECONMobile/RECONMobile-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A45348B82B3A40FF47BCD2A5 /* libPods-RECONMobile.a in Frameworks */,
+				65F9D7AB02E460E1C0CA9EEC /* libPods-RECONMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,7 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				956D5394B39BF94BD8E1B5E2 /* PrivacyInfo.xcprivacy */,
+				BF288C7791AB62309FE17E0A /* PrivacyInfo.xcprivacy */,
 			);
 			name = RECONMobile;
 			sourceTree = "<group>";
@@ -62,34 +62,25 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				9B11D3BC6846EFD973808A12 /* libPods-RECONMobile.a */,
+				C41C899548A6CF619D612736 /* libPods-RECONMobile.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		400A548B4EE0EE6CA7204AD1 /* ExpoModulesProviders */ = {
+		4DA17BDAA7537CB30E7F0068 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				455406EB82EBDCF7BD82E6E9 /* RECONMobile */,
+				9DE859F66DE41B7D7FF409D1 /* RECONMobile */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
-		455406EB82EBDCF7BD82E6E9 /* RECONMobile */ = {
+		74051544FCE7F330AB691539 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4AE019AFFC8CC669E5D4126F /* ExpoModulesProvider.swift */,
+				C063E31F9EA95B564526256E /* Pods-RECONMobile.debug.xcconfig */,
+				84AA8BD0C011515015A19FE8 /* Pods-RECONMobile.release.xcconfig */,
 			);
-			name = RECONMobile;
-			sourceTree = "<group>";
-		};
-		6DFF8D01B562622215CD87FC /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				232AA0B47C4DFC1FBEC14C9E /* Pods-RECONMobile.debug.xcconfig */,
-				CF7E18729882A1A93D0202DD /* Pods-RECONMobile.release.xcconfig */,
-			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -107,8 +98,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				6DFF8D01B562622215CD87FC /* Pods */,
-				400A548B4EE0EE6CA7204AD1 /* ExpoModulesProviders */,
+				74051544FCE7F330AB691539 /* Pods */,
+				4DA17BDAA7537CB30E7F0068 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -121,6 +112,14 @@
 				13B07F961A680F5B00A75B9A /* RECONMobile.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9DE859F66DE41B7D7FF409D1 /* RECONMobile */ = {
+			isa = PBXGroup;
+			children = (
+				59E8D4D421CA7AB955D1722A /* ExpoModulesProvider.swift */,
+			);
+			name = RECONMobile;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -140,13 +139,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RECONMobile" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				A9A32FBCCF472714FB516207 /* [Expo] Configure project */,
+				C75CEA52F925DA3823A9256A /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				DE67CF845AE71366D94CE747 /* [CP] Embed Pods Frameworks */,
+				43446FB826656129B36014C5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +195,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				9232AED87A647C16929E2978 /* PrivacyInfo.xcprivacy in Resources */,
+				9613E7457D3BB6AFF2144518 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +237,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		43446FB826656129B36014C5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RECONMobile/Pods-RECONMobile-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RECONMobile/Pods-RECONMobile-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
@@ -314,7 +331,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RECONMobile/Pods-RECONMobile-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A9A32FBCCF472714FB516207 /* [Expo] Configure project */ = {
+		C75CEA52F925DA3823A9256A /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -333,24 +350,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-RECONMobile/expo-configure-project.sh\"\n";
 		};
-		DE67CF845AE71366D94CE747 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RECONMobile/Pods-RECONMobile-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RECONMobile/Pods-RECONMobile-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -359,7 +358,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				D1E527CB109DBA7A1576ADBE /* ExpoModulesProvider.swift in Sources */,
+				ADD5842B05CF584B56A97219 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,12 +367,13 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 232AA0B47C4DFC1FBEC14C9E /* Pods-RECONMobile.debug.xcconfig */;
+			baseConfigurationReference = C063E31F9EA95B564526256E /* Pods-RECONMobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RECONMobile/RECONMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = WV5PC84BKL;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -385,7 +385,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -404,19 +404,20 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CF7E18729882A1A93D0202DD /* Pods-RECONMobile.release.xcconfig */;
+			baseConfigurationReference = 84AA8BD0C011515015A19FE8 /* Pods-RECONMobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RECONMobile/RECONMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = WV5PC84BKL;
 				INFOPLIST_FILE = RECONMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -487,10 +488,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -545,10 +543,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
