@@ -32,7 +32,7 @@ export default function Home({ navigation, route }) {
   // an array of available devices
   const [devices, setDevices] = useState([]);
   // create new Set of the discovered devices to set thems into devices array
-  const discoveredDevices = new Set();
+  const discoveredDevicesRef = useRef(new Set());
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [loginModalVisible, setLoginModalVisible] = useState(false);
@@ -129,7 +129,7 @@ export default function Home({ navigation, route }) {
 
   useEffect(() => {
     // Check if parameters exist and update state accordingly
-    if (route.params && route.params.scanning) {
+    if (route.params && route.params?.scanning) {
       setScanning(false);
       scanForDevices();
     }
@@ -140,6 +140,7 @@ export default function Home({ navigation, route }) {
     if (scanning) {
       // if scanning state is true
       setDevices([]); // empty the array
+      discoveredDevicesRef.current.clear();
       // call scan function of the ble plx module
       bleManager.startDeviceScan(
         null,
@@ -154,14 +155,17 @@ export default function Home({ navigation, route }) {
               text2: error.message,
               visibilityTime: 3000,
             });
+            bleManager.stopDeviceScan();
             return;
           }
           // If retrieve an device, add it to the scanned devices list
-          if (scannedDevice && !discoveredDevices.has(scannedDevice.id)) {
-            if (scannedDevice.name) {
-              discoveredDevices.add(scannedDevice.id);
-              setDevices((prevDevices) => [...prevDevices, scannedDevice]);
-            }
+          if (
+            scannedDevice &&
+            scannedDevice.name &&
+            !discoveredDevicesRef.current.has(scannedDevice.id)
+          ) {
+            discoveredDevicesRef.current.add(scannedDevice.id);
+            setDevices((prevDevices) => [...prevDevices, scannedDevice]);
           }
         }
       );
@@ -370,7 +374,7 @@ export default function Home({ navigation, route }) {
     <View style={styles.HomeView}>
       <ButtonUI
         onPress={() => {
-          setScanning(!scanning);
+          setScanning((prev) => !prev);
         }}
         // onPress={() => {
         //   connectToDevice();
@@ -385,15 +389,13 @@ export default function Home({ navigation, route }) {
         {scanning && <ActivityIndicator size="small" color="#0055a4" />}
       </View>
       <FlatList
-        contentContainerStyle={{
-          flex: 1,
-        }}
         data={devices}
         renderItem={renderItem}
         keyExtractor={(item, index) => index}
         refreshing={false}
         onRefresh={scanForDevices}
         ListEmptyComponent={handleEmpty}
+        scrollEnabled={true}
       />
       <Login_modal
         loginModalVisible={loginModalVisible}

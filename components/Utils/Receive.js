@@ -71,7 +71,7 @@ export class Receive {
             text2: "No received data",
             visibilityTime: 3000,
           });
-          reject(new Error("Timeout: Incomplete data received"));
+          reject("Timeout: Incomplete data received");
         }
       }, 7000);
 
@@ -130,13 +130,13 @@ export class Receive {
               }
             }
           } catch (err) {
-            console.error("Error parsing data:", err);
+            console.log("Error parsing data:", err);
             // Wait for other packets; don't reject yet
           }
         }
       );
     }).catch((err) => {
-      console.error("Receive failed:", err);
+      console.log("Receive failed:", err);
       return false;
     });
   }
@@ -168,7 +168,7 @@ export class Receive {
             text2: "No received data",
             visibilityTime: 3000,
           });
-          reject(new Error("Timeout: No timer data received"));
+          reject("Timeout: No timer data received");
         }
       }, 7000);
 
@@ -205,7 +205,7 @@ export class Receive {
               resolve(true);
             }
           } catch (err) {
-            console.error("Error parsing timer data:", err);
+            console.log("Error parsing timer data:", err);
             // We continue listening in case of parse issues
           }
         }
@@ -246,7 +246,7 @@ export class Receive {
             text2: "No received data",
             visibilityTime: 3000,
           });
-          reject(new Error("Timeout: No settings data received"));
+          reject("Timeout: No settings data received");
         }
       }, 7000);
 
@@ -321,7 +321,7 @@ export class Receive {
               if (subscription?.remove) subscription.remove();
             }
           } catch (err) {
-            console.error("Error parsing settings data:", err);
+            console.log("Error parsing settings data:", err);
             // We continue listening in case of parse issues
           }
         }
@@ -363,7 +363,7 @@ export class Receive {
             text2: "No received data",
             visibilityTime: 3000,
           });
-          reject(new Error("Timeout: No Statistic data received"));
+          reject("Timeout: No Statistic data received");
         }
       }, 7000);
       device?.monitorCharacteristicForService(
@@ -405,7 +405,7 @@ export class Receive {
               resolve(true);
             }
           } catch (err) {
-            console.error("Error parsing statistic data:", err);
+            console.log("Error parsing statistic data:", err);
             // We continue listening in case of parse issues
           }
         }

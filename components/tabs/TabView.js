@@ -23,7 +23,7 @@ const TabView = ({ navigation, initialTab }) => {
   const [connectedDevice, setConnectedDevice] = useState(null);
   const [wellName, setWellName] = useState(null);
   const isFocused = useIsFocused();
-  const currentVersion = "Prod 7-29APR2025@12:00.AM";
+  const currentVersion = "Prod 8-13MAY2025@12:00.AM";
   // the existed pages for config welltimer after connected to it
   const tabs = [
     {
@@ -89,8 +89,9 @@ const TabView = ({ navigation, initialTab }) => {
               text: "Cancel",
               onPress: () => {
                 navigation.removeListener(),
-                  navigation.navigate("Home", {
-                    scanning: false,
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "Home", params: { scanning: false } }],
                   });
               },
               style: "cancel",
@@ -99,8 +100,9 @@ const TabView = ({ navigation, initialTab }) => {
               text: "OK",
               onPress: () => {
                 navigation.removeListener(),
-                  navigation.navigate("Home", {
-                    scanning: false,
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "Home", params: { scanning: false } }],
                   });
               },
             },
@@ -126,7 +128,10 @@ const TabView = ({ navigation, initialTab }) => {
       });
       setConnectedDevice(null); // Optionally reset device state
       navigation.removeListener();
-      navigation.navigate("Home", { scanning: false });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home", params: { scanning: false } }],
+      });
     };
 
     // If device is connected, listen for disconnection events
@@ -160,7 +165,10 @@ const TabView = ({ navigation, initialTab }) => {
         console.log("Disconnected successfully");
         setConnectedDevice(null);
         navigation.removeListener();
-        navigation.navigate("Home", { scanning: false });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home", params: { scanning: false } }],
+        });
       } else {
         console.log("No device connected");
       }

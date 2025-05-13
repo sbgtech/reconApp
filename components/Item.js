@@ -9,7 +9,7 @@ const Item = ({ name, id, onPress, title, disabled }) => {
     <View style={styles.itemView}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName(width)}>
-          {name ? `${name} ${id.substr(0, 5)}` : "Unknown"}
+          {name === "RECON Mobile" ? `${name} ${id.substr(0, 5)}` : name}
         </Text>
         <Text style={styles.itemID(width)}>{id ? id : "Unknown"}</Text>
       </View>
