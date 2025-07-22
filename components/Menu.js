@@ -1,63 +1,104 @@
 import React, { useEffect, useState } from "react";
-import { useIsFocused } from "@react-navigation/native";
-import { View, Text, Alert, useWindowDimensions } from "react-native";
-import ButtonUI from "../ButtonUI";
-import Tab from "./Tab";
-import WellStatus from "./WellStatusTab";
-import TimerTab from "./TimerTab";
-import SettingsTab from "./SettingsTab";
-import StatisticsTab from "./StatisticsTab";
-import TestTab from "./TestTab";
+import {
+  ScrollView,
+  View,
+  useWindowDimensions,
+  Text,
+  Alert,
+} from "react-native";
+import MenuItem from "./MenuItem";
+import { styles } from "./tabs/style/styles";
 import { BleManager } from "react-native-ble-plx";
-import { UART_SERVICE_UUID } from "../Utils/Constants";
-import { styles } from "./style/styles";
-import { Receive } from "../Utils/Receive";
+import { Receive } from "./Utils/Receive";
+import { UART_SERVICE_UUID } from "./Utils/Constants";
 import Toast from "react-native-toast-message";
+import ButtonUI from "./ButtonUI";
+import Loading from "./tabs/blocs/Loading";
 
 const bleManager = new BleManager();
 
-const TabView = ({ navigation, initialTab }) => {
+const Menu = ({ navigation }) => {
   const { width } = useWindowDimensions();
-  // set the connected welltimer to this variable
-  const [connectedDevice, setConnectedDevice] = useState(null);
   const [wellName, setWellName] = useState(null);
-  const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [connectedDevice, setConnectedDevice] = useState(null);
   const currentVersion = "Prod 8-13MAY2025@12:00.AM";
-  // the existed pages for config welltimer after connected to it
-  const tabs = [
+
+  const menu = [
     {
-      label: "Well status",
-      content: <WellStatus connectedDevice={connectedDevice} />,
+      iconName: "pulse",
+      tabName: "Well Status",
     },
     {
-      label: "Timers",
-      content: <TimerTab connectedDevice={connectedDevice} />,
+      iconName: "stopwatch-outline",
+      tabName: "Timers",
     },
     {
-      label: "Settings",
-      content: <SettingsTab connectedDevice={connectedDevice} />,
+      iconName: "cog",
+      tabName: "Settings",
     },
     {
-      label: "Statistics",
-      content: <StatisticsTab connectedDevice={connectedDevice} />,
+      iconName: "podium-outline",
+      tabName: "Statistics",
     },
     {
-      label: "Test",
-      content: (
-        <TestTab
-          connectedDevice={connectedDevice}
-          navigation={navigation}
-          setActiveTab={setActiveTab}
-        />
-      ),
+      iconName: "radio-button-on",
+      tabName: "Triggers",
+    },
+    {
+      iconName: "hammer-outline",
+      tabName: "Test",
     },
   ];
-  // variable used for known the current page, default is the first page (index 0)
-  const [activeTab, setActiveTab] = useState(initialTab);
 
-  // function to set active page to the variable when pressing on the page
   const handleTabPress = (index) => {
-    setActiveTab(index);
+    if (!connectedDevice) {
+      Toast.show({
+        type: "error",
+        text1: "Device not connected",
+        text2: "Please connect to a device first.",
+        visibilityTime: 3000,
+      });
+      return; // Return early if there's no connected device
+    }
+    switch (index) {
+      case 0:
+        navigation.navigate("WellStatus", { connectedDevice: connectedDevice });
+        break;
+      case 1:
+        navigation.navigate("Timers", { connectedDevice: connectedDevice });
+        break;
+      case 2:
+        navigation.navigate("Settings", { connectedDevice: connectedDevice });
+        break;
+      case 3:
+        navigation.navigate("Statistics", { connectedDevice: connectedDevice });
+        break;
+      case 4:
+        navigation.navigate("Triggers", { connectedDevice: connectedDevice });
+        break;
+      case 5:
+        navigation.navigate("Test", { connectedDevice: connectedDevice });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const fetchWellName = async () => {
+    try {
+      const dataPromise = await Receive.ReceiveWellName(
+        connectedDevice,
+        setWellName,
+        setLoading,
+        setTitle
+      );
+      await dataPromise;
+      // Receive and parse data again
+    } catch (error) {
+      console.error("Error during fetching data:", error);
+    }
   };
 
   useEffect(() => {
@@ -74,11 +115,15 @@ const TabView = ({ navigation, initialTab }) => {
           visibilityTime: 3000,
         });
         setConnectedDevice(connectedDevices[0]);
-        // await Receive.sendReqToGetData(connectedDevice, activeTab);
         setTimeout(async () => {
           await Receive.sendIden(connectedDevices[0], connectedDevices[0].id);
         }, 500);
-        await Receive.ReceiveWellName(connectedDevices[0], setWellName);
+        await Receive.ReceiveWellName(
+          connectedDevices[0],
+          setWellName,
+          setLoading,
+          setTitle
+        );
       } else {
         Alert.alert(
           "Device Not Allowed",
@@ -142,20 +187,6 @@ const TabView = ({ navigation, initialTab }) => {
     }
   }, [connectedDevice]);
 
-  useEffect(() => {
-    // if device is connected ,call send requests function to send request to device with the current page input to get data and display them
-    if (connectedDevice) {
-      Receive.sendReqToGetData(connectedDevice, activeTab);
-    }
-  }, [activeTab, connectedDevice]); // Send request whenever activeTab changes (call useEffect whenever activeTab changes)
-
-  useEffect(() => {
-    if (!isFocused) {
-      // Code to run when the screen is focused
-      disconnectFromDevice();
-    }
-  }, [isFocused]);
-
   // function to disconnect the current connected device from BLE
   const disconnectFromDevice = async () => {
     try {
@@ -193,7 +224,7 @@ const TabView = ({ navigation, initialTab }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <View style={styles.deviceBloc}>
         <View style={styles.nameVersionBloc(width)}>
           <View>
@@ -216,39 +247,50 @@ const TabView = ({ navigation, initialTab }) => {
             <Text style={styles.deviceInfo(width)}>
               ID : {connectedDevice.id}
             </Text>
-            <ButtonUI
-              onPress={() => handleDisconnect()}
-              title={"Disconnect"}
-              btnStyle={styles.deviceBtns}
-              txtStyle={styles.TextSendStyle(width)}
-            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 6,
+                gap: 12,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <ButtonUI
+                  onPress={() => fetchWellName()}
+                  title={"Refresh"}
+                  btnStyle={styles.deviceBtns}
+                  txtStyle={styles.TextSendStyle(width)}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <ButtonUI
+                  onPress={() => handleDisconnect()}
+                  title={"Disconnect"}
+                  btnStyle={styles.deviceBtns}
+                  txtStyle={styles.TextSendStyle(width)}
+                />
+              </View>
+            </View>
           </View>
         ) : (
           <Text style={styles.deviceInfo(width)}>No connected devices</Text>
         )}
       </View>
-      <View style={styles.tabsContainer}>
-        {tabs.map((tab, index) => (
-          <Tab
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+        {menu.map((m, index) => (
+          <MenuItem
             key={index}
-            label={tab.label}
-            isActive={index === activeTab}
+            iconName={m.iconName}
+            tabName={m.tabName}
             onPress={() => handleTabPress(index)}
           />
         ))}
-      </View>
-      <View style={styles.contentContainer}>
-        {tabs[activeTab].label === "Test" && (
-          <TestTab
-            connectedDevice={connectedDevice}
-            navigation={navigation}
-            setActiveTab={setActiveTab}
-          />
-        )}
-        {tabs[activeTab].label !== "Test" && tabs[activeTab].content}
-      </View>
+      </ScrollView>
+      <Loading loading={loading} title={title} />
     </View>
   );
 };
 
-export default TabView;
+export default Menu;

@@ -13,6 +13,12 @@ import { useCallback, useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 import Entypo from "@expo/vector-icons/Entypo";
+import Menu from "./components/Menu";
+import WellStatus from "./components/tabs/WellStatusTab";
+import TimerTab from "./components/tabs/TimerTab";
+import SettingsTab from "./components/tabs/SettingsTab";
+import StatisticsTab from "./components/tabs/StatisticsTab";
+import TestTab from "./components/tabs/TestTab";
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
@@ -63,6 +69,7 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Item" component={Item} />
         <Stack.Screen
           name="DeviceSettings"
@@ -71,6 +78,11 @@ export default function App() {
             title: "Device settings",
           }}
         />
+        <Stack.Screen name="WellStatus" component={WellStatus} />
+        <Stack.Screen name="Timers" component={TimerTab} />
+        <Stack.Screen name="Settings" component={SettingsTab} />
+        <Stack.Screen name="Statistics" component={StatisticsTab} />
+        <Stack.Screen name="Test" component={TestTab} />
       </Stack.Navigator>
       <Toast />
     </NavigationContainer>

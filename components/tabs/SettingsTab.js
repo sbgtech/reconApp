@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   useWindowDimensions,
   Dimensions,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { styles } from "./style/styles";
 import ButtonUI from "../ButtonUI";
@@ -22,10 +23,11 @@ import {
 } from "../Utils/Constants";
 import Toast from "react-native-toast-message";
 
-const SettingsTab = (props) => {
+const SettingsTab = ({ route }) => {
   // declare initial states
   const { height } = Dimensions.get("window");
   const { width } = useWindowDimensions();
+  const { connectedDevice } = route.params;
   const cardMinWidth =
     width < 600 ? width : width > 950 ? width / 3.4 : width / 2.3;
   const numColumns = Math.max(1, Math.floor(width / cardMinWidth));
@@ -33,70 +35,72 @@ const SettingsTab = (props) => {
   const [loading, setLoading] = useState(false);
   // title of loading modal
   const [title, setTitle] = useState("");
-  // value of valve A, default 0 (OFF)
-  const [valveA, setValveA] = useState(0);
-  // value of valve B, default 0 (OFF)
-  const [valveB, setValveB] = useState(0);
-  // display the name of the productionMethod based on the received index
-  const [productionMethodIndex, setProductionMethodIndex] = useState(null);
+
   const productionMethod = [
     "Timer mode",
     "Timer Intermit mode",
     "Pressure Intermit mode",
   ];
-  // prepare variables to set them the received data
-  const [missrunMax, setMissrunMax] = useState("");
-  const [falseArrivalsIndex, setFalseArrivalsIndex] = useState(null);
   const falseArrivals_hiLoMode = ["Disable", "Enable"];
-  const [wellDepth, setWellDepth] = useState("");
-  // states of HiLo mode
-  const [hiLoModeIndex, setHiLoModeIndex] = useState(null);
-  const [hiLoHigh, setHiLoHigh] = useState("");
-  const [hiLoLow, setHiLoLow] = useState("");
-  const [hiLoDelay, setHiLoDelay] = useState("");
-  // states of PID
-  const [pidOverrideIndex, setPidOverrideIndex] = useState(null);
-  const [pidSP, setPidSP] = useState("");
-  const [pidKP, setPidKP] = useState("");
-  const [pidKI, setPidKI] = useState("");
-  const [pidKD, setPidKD] = useState("");
-  const [pidINIT, setPidINIT] = useState("");
-  const [pidDB, setPidDB] = useState("");
-  const [pidLL, setPidLL] = useState("");
-  // states of AUTOCATCHER
-  const [autocatcherIndex, setAutocatcherIndex] = useState(null);
-  const [autocatcherDelay, setAutocatcherDelay] = useState("");
-  const [BValveTwinIndex, setBValveTwinIndex] = useState(null);
-  // declare initial states for the source, max pis and min psi for pressure intermit mode
-  const [receivedPressureSourceIndex, setReceivedPressureSourceIndex] =
-    useState(null);
-  const [receivedPressureMaxPSI, setReceivedPressureMaxPSI] = useState("");
-  const [receivedPressureMinPSI, setReceivedPressureMinPSI] = useState("");
-  // states of LP
+  // The dropdown select options for LP, CP and TP
   const LP_CP_TP_type = ["Voltage"];
-  const [LPTypeIndex, setLPTypeIndex] = useState(null);
-  const [LPSensorMax, setLPSensorMax] = useState("");
-  const [LPSensorMin, setLPSensorMin] = useState("");
-  const [LPVoltageMax, setLPVoltageMax] = useState("");
-  const [LPVoltageMin, setLPVoltageMin] = useState("");
-  // states of CP
-  const [CPTypeIndex, setCPTypeIndex] = useState(null);
-  const [CPSensorMax, setCPSensorMax] = useState("");
-  const [CPSensorMin, setCPSensorMin] = useState("");
-  const [CPVoltageMax, setCPVoltageMax] = useState("");
-  const [CPVoltageMin, setCPVoltageMin] = useState("");
-  // states of TP
-  const [TPTypeIndex, setTPTypeIndex] = useState(null);
-  const [TPSensorMax, setTPSensorMax] = useState("");
-  const [TPSensorMin, setTPSensorMin] = useState("");
-  const [TPVoltageMax, setTPVoltageMax] = useState("");
-  const [TPVoltageMin, setTPVoltageMin] = useState("");
+
+  const initialSettingsState = {
+    valveA: 0,
+    valveB: 0,
+    productionMethodIndex: null,
+    missrunMax: "",
+    falseArrivalsIndex: null,
+    wellDepth: "",
+    hiLoModeIndex: null,
+    hiLoHigh: "",
+    hiLoLow: "",
+    hiLoDelay: "",
+    pidOverrideIndex: null,
+    pidSP: "",
+    pidKP: "",
+    pidKI: "",
+    pidKD: "",
+    pidINIT: "",
+    pidDB: "",
+    pidLL: "",
+    autocatcherIndex: null,
+    autocatcherDelay: "",
+    BValveTwinIndex: null,
+    receivedPressureSourceIndex: null,
+    receivedPressureMaxPSI: "",
+    receivedPressureMinPSI: "",
+    LPTypeIndex: null,
+    LPSensorMax: "",
+    LPSensorMin: "",
+    LPVoltageMax: "",
+    LPVoltageMin: "",
+    CPTypeIndex: null,
+    CPSensorMax: "",
+    CPSensorMin: "",
+    CPVoltageMax: "",
+    CPVoltageMin: "",
+    TPTypeIndex: null,
+    TPSensorMax: "",
+    TPSensorMin: "",
+    TPVoltageMax: "",
+    TPVoltageMin: "",
+  };
+
+  const settingsReducer = (state, action) => ({
+    ...state,
+    ...action, // Merge new values
+  });
+
+  const [settings, dispatchSettings] = useReducer(
+    settingsReducer,
+    initialSettingsState
+  );
 
   // handle change missrunMax value
   const handleChangeMissrunMax = (text) => {
     if (text) {
-      const validText = text.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-      // Ensure the length is 4
+      const validText = text.replace(/[^0-9]/g, "");
       if (validText.length > 4) {
         Toast.show({
           type: "error",
@@ -104,12 +108,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setMissrunMax("");
+        dispatchSettings({ missrunMax: "" });
       } else {
-        setMissrunMax(validText);
+        dispatchSettings({ missrunMax: validText });
       }
     } else {
-      setMissrunMax("");
+      dispatchSettings({ missrunMax: "" });
     }
   };
 
@@ -125,12 +129,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setWellDepth("");
+        dispatchSettings({ wellDepth: "" });
       } else {
-        setWellDepth(validText);
+        dispatchSettings({ wellDepth: validText });
       }
     } else {
-      setWellDepth("");
+      dispatchSettings({ wellDepth: "" });
     }
   };
 
@@ -146,12 +150,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setHiLoHigh("");
+        dispatchSettings({ hiLoHigh: "" });
       } else {
-        setHiLoHigh(validText);
+        dispatchSettings({ hiLoHigh: validText });
       }
     } else {
-      setHiLoHigh("");
+      dispatchSettings({ hiLoHigh: "" });
     }
   };
 
@@ -167,12 +171,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setHiLoLow("");
+        dispatchSettings({ hiLoLow: "" });
       } else {
-        setHiLoLow(validText);
+        dispatchSettings({ hiLoLow: validText });
       }
     } else {
-      setHiLoLow("");
+      dispatchSettings({ hiLoLow: "" });
     }
   };
 
@@ -188,12 +192,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setHiLoDelay("");
+        dispatchSettings({ hiLoDelay: "" });
       } else {
-        setHiLoDelay(validText);
+        dispatchSettings({ hiLoDelay: validText });
       }
     } else {
-      setHiLoDelay("");
+      dispatchSettings({ hiLoDelay: "" });
     }
   };
 
@@ -209,12 +213,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setPidSP("");
+        dispatchSettings({ pidSP: "" });
       } else {
-        setPidSP(validText);
+        dispatchSettings({ pidSP: validText });
       }
     } else {
-      setPidSP("");
+      dispatchSettings({ pidSP: "" });
     }
   };
 
@@ -230,12 +234,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setPidKP("");
+        dispatchSettings({ pidKP: "" });
       } else {
-        setPidKP(validText);
+        dispatchSettings({ pidKP: validText });
       }
     } else {
-      setPidKP("");
+      dispatchSettings({ pidKP: "" });
     }
   };
 
@@ -251,12 +255,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setPidKI("");
+        dispatchSettings({ pidKI: "" });
       } else {
-        setPidKI(validText);
+        dispatchSettings({ pidKI: validText });
       }
     } else {
-      setPidKI("");
+      dispatchSettings({ pidKI: "" });
     }
   };
 
@@ -272,12 +276,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setPidKD("");
+        dispatchSettings({ pidKD: "" });
       } else {
-        setPidKD(validText);
+        dispatchSettings({ pidKD: validText });
       }
     } else {
-      setPidKD("");
+      dispatchSettings({ pidKD: "" });
     }
   };
 
@@ -293,12 +297,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setPidINIT("");
+        dispatchSettings({ pidINIT: "" });
       } else {
-        setPidINIT(validText);
+        dispatchSettings({ pidINIT: validText });
       }
     } else {
-      setPidINIT("");
+      dispatchSettings({ pidINIT: "" });
     }
   };
 
@@ -314,12 +318,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setPidDB("");
+        dispatchSettings({ pidDB: "" });
       } else {
-        setPidDB(validText);
+        dispatchSettings({ pidDB: validText });
       }
     } else {
-      setPidDB("");
+      dispatchSettings({ pidDB: "" });
     }
   };
 
@@ -335,12 +339,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setPidLL("");
+        dispatchSettings({ pidLL: "" });
       } else {
-        setPidLL(validText);
+        dispatchSettings({ pidLL: validText });
       }
     } else {
-      setPidLL("");
+      dispatchSettings({ pidLL: "" });
     }
   };
 
@@ -356,12 +360,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 3 digits",
           visibilityTime: 3000,
         });
-        setAutocatcherDelay("");
+        dispatchSettings({ autocatcherDelay: "" });
       } else {
-        setAutocatcherDelay(validText);
+        dispatchSettings({ autocatcherDelay: validText });
       }
     } else {
-      setAutocatcherDelay("");
+      dispatchSettings({ autocatcherDelay: "" });
     }
   };
 
@@ -377,12 +381,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setReceivedPressureMaxPSI("");
+        dispatchSettings({ receivedPressureMaxPSI: "" });
       } else {
-        setReceivedPressureMaxPSI(validText);
+        dispatchSettings({ receivedPressureMaxPSI: validText });
       }
     } else {
-      setReceivedPressureMaxPSI("");
+      dispatchSettings({ receivedPressureMaxPSI: "" });
     }
   };
 
@@ -398,12 +402,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setReceivedPressureMinPSI("");
+        dispatchSettings({ receivedPressureMinPSI: "" });
       } else {
-        setReceivedPressureMinPSI(validText);
+        dispatchSettings({ receivedPressureMinPSI: validText });
       }
     } else {
-      setReceivedPressureMinPSI("");
+      dispatchSettings({ receivedPressureMinPSI: "" });
     }
   };
 
@@ -419,12 +423,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setLPSensorMax("");
+        dispatchSettings({ LPSensorMax: "" });
       } else {
-        setLPSensorMax(validText);
+        dispatchSettings({ LPSensorMax: validText });
       }
     } else {
-      setLPSensorMax("");
+      dispatchSettings({ LPSensorMax: "" });
     }
   };
 
@@ -440,12 +444,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setLPSensorMin("");
+        dispatchSettings({ LPSensorMin: "" });
       } else {
-        setLPSensorMin(validText);
+        dispatchSettings({ LPSensorMin: validText });
       }
     } else {
-      setLPSensorMin("");
+      dispatchSettings({ LPSensorMin: "" });
     }
   };
 
@@ -482,15 +486,15 @@ const SettingsTab = (props) => {
             text2: "The max value must be 9.9",
             visibilityTime: 3000,
           });
-          setLPVoltageMax(""); // Clear or reset the value
+          dispatchSettings({ LPVoltageMax: "" });
         } else {
-          setLPVoltageMax(validText);
+          dispatchSettings({ LPVoltageMax: validText });
         }
       } else {
-        setLPVoltageMax(""); // Clear or reset the value
+        dispatchSettings({ LPVoltageMax: "" });
       }
     } else {
-      setLPVoltageMax(""); // Handle empty input case
+      dispatchSettings({ LPVoltageMax: "" });
     }
   };
 
@@ -527,15 +531,15 @@ const SettingsTab = (props) => {
             text2: "The max value must be 9.9",
             visibilityTime: 3000,
           });
-          setLPVoltageMin(""); // Clear or reset the value
+          dispatchSettings({ LPVoltageMin: "" });
         } else {
-          setLPVoltageMin(validText);
+          dispatchSettings({ LPVoltageMin: validText });
         }
       } else {
-        setLPVoltageMin(""); // Clear or reset the value
+        dispatchSettings({ LPVoltageMin: "" });
       }
     } else {
-      setLPVoltageMin(""); // Handle empty input case
+      dispatchSettings({ LPVoltageMin: "" });
     }
   };
 
@@ -551,12 +555,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setCPSensorMax("");
+        dispatchSettings({ CPSensorMax: "" });
       } else {
-        setCPSensorMax(validText);
+        dispatchSettings({ CPSensorMax: validText });
       }
     } else {
-      setCPSensorMax("");
+      dispatchSettings({ CPSensorMax: "" });
     }
   };
 
@@ -572,12 +576,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setCPSensorMin("");
+        dispatchSettings({ CPSensorMin: "" });
       } else {
-        setCPSensorMin(validText);
+        dispatchSettings({ CPSensorMin: validText });
       }
     } else {
-      setCPSensorMin("");
+      dispatchSettings({ CPSensorMin: "" });
     }
   };
 
@@ -614,15 +618,15 @@ const SettingsTab = (props) => {
             text2: "The max value must be 9.9",
             visibilityTime: 3000,
           });
-          setCPVoltageMax(""); // Clear or reset the value
+          dispatchSettings({ CPVoltageMax: "" });
         } else {
-          setCPVoltageMax(validText);
+          dispatchSettings({ CPVoltageMax: validText });
         }
       } else {
-        setCPVoltageMax(""); // Clear or reset the value
+        dispatchSettings({ CPVoltageMax: "" });
       }
     } else {
-      setCPVoltageMax(""); // Handle empty input case
+      dispatchSettings({ CPVoltageMax: "" });
     }
   };
 
@@ -659,15 +663,15 @@ const SettingsTab = (props) => {
             text2: "The max value must be 9.9",
             visibilityTime: 3000,
           });
-          setCPVoltageMin(""); // Clear or reset the value
+          dispatchSettings({ CPVoltageMin: "" });
         } else {
-          setCPVoltageMin(validText);
+          dispatchSettings({ CPVoltageMin: validText });
         }
       } else {
-        setCPVoltageMin(""); // Clear or reset the value
+        dispatchSettings({ CPVoltageMin: "" });
       }
     } else {
-      setCPVoltageMin(""); // Handle empty input case
+      dispatchSettings({ CPVoltageMin: "" });
     }
   };
 
@@ -683,12 +687,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setTPSensorMax("");
+        dispatchSettings({ TPSensorMax: "" });
       } else {
-        setTPSensorMax(validText);
+        dispatchSettings({ TPSensorMax: validText });
       }
     } else {
-      setTPSensorMax("");
+      dispatchSettings({ TPSensorMax: "" });
     }
   };
 
@@ -704,12 +708,12 @@ const SettingsTab = (props) => {
           text2: "The max value must be 4 digits",
           visibilityTime: 3000,
         });
-        setTPSensorMin("");
+        dispatchSettings({ TPSensorMin: "" });
       } else {
-        setTPSensorMin(validText);
+        dispatchSettings({ TPSensorMin: validText });
       }
     } else {
-      setTPSensorMin("");
+      dispatchSettings({ TPSensorMin: "" });
     }
   };
 
@@ -746,15 +750,15 @@ const SettingsTab = (props) => {
             text2: "The max value must be 9.9",
             visibilityTime: 3000,
           });
-          setTPVoltageMax(""); // Clear or reset the value
+          dispatchSettings({ TPVoltageMax: "" });
         } else {
-          setTPVoltageMax(validText);
+          dispatchSettings({ TPVoltageMax: validText });
         }
       } else {
-        setTPVoltageMax(""); // Clear or reset the value
+        dispatchSettings({ TPVoltageMax: "" });
       }
     } else {
-      setTPVoltageMax(""); // Handle empty input case
+      dispatchSettings({ TPVoltageMax: "" });
     }
   };
 
@@ -791,21 +795,21 @@ const SettingsTab = (props) => {
             text2: "The max value must be 9.9",
             visibilityTime: 3000,
           });
-          setTPVoltageMin(""); // Clear or reset the value
+          dispatchSettings({ TPVoltageMin: "" });
         } else {
-          setTPVoltageMin(validText);
+          dispatchSettings({ TPVoltageMin: validText });
         }
       } else {
-        setTPVoltageMin(""); // Clear or reset the value
+        dispatchSettings({ TPVoltageMin: "" });
       }
     } else {
-      setTPVoltageMin(""); // Handle empty input case
+      dispatchSettings({ TPVoltageMin: "" });
     }
   };
 
   // send array of prod method, missrun max, false arrivals and well depth values to device with their addresses
   const handleSendFirstBloc = async () => {
-    if (missrunMax === "" || wellDepth === "") {
+    if (settings.missrunMax === "" || settings.wellDepth === "") {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -815,20 +819,20 @@ const SettingsTab = (props) => {
       return; // Exit the function if validation fails
     }
     try {
+      fetchDataSettings();
       const arr = JSON.stringify([
         3,
         111,
-        productionMethodIndex,
+        settings.productionMethodIndex,
         109,
-        Number(missrunMax),
+        Number(settings.missrunMax),
         110,
-        falseArrivalsIndex,
+        settings.falseArrivalsIndex,
         125,
-        Number(wellDepth),
+        Number(settings.wellDepth),
       ]);
-      console.log("index is ", productionMethodIndex);
       const buffer = Buffer.from(arr + "\n", "utf-8");
-      await props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -839,7 +843,6 @@ const SettingsTab = (props) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
-      await fetchDataSettings();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -850,7 +853,11 @@ const SettingsTab = (props) => {
 
   // send array of HiLo values to device
   const handleSendHiLo = async () => {
-    if (hiLoHigh === "" || hiLoLow === "" || hiLoDelay === "") {
+    if (
+      settings.hiLoHigh === "" ||
+      settings.hiLoLow === "" ||
+      settings.hiLoDelay === ""
+    ) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -858,7 +865,7 @@ const SettingsTab = (props) => {
         visibilityTime: 4000,
       });
       return; // Exit the function if validation fails
-    } else if (Number(hiLoLow) > Number(hiLoHigh)) {
+    } else if (Number(settings.hiLoLow) > Number(settings.hiLoHigh)) {
       Toast.show({
         type: "error",
         text1: "Warning",
@@ -867,19 +874,20 @@ const SettingsTab = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           122,
-          hiLoModeIndex,
+          settings.hiLoModeIndex,
           123,
-          Number(hiLoHigh),
+          Number(settings.hiLoHigh),
           124,
-          Number(hiLoLow),
+          Number(settings.hiLoLow),
           155,
-          Number(hiLoDelay),
+          Number(settings.hiLoDelay),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -890,7 +898,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -903,13 +910,13 @@ const SettingsTab = (props) => {
   // send array of PID values to device
   const handleSendPID = async () => {
     if (
-      pidSP === "" ||
-      pidKP === "" ||
-      pidKI === "" ||
-      pidKD === "" ||
-      pidINIT === "" ||
-      pidDB === "" ||
-      pidLL === ""
+      settings.pidSP === "" ||
+      settings.pidKP === "" ||
+      settings.pidKI === "" ||
+      settings.pidKD === "" ||
+      settings.pidINIT === "" ||
+      settings.pidDB === "" ||
+      settings.pidLL === ""
     ) {
       Toast.show({
         type: "error",
@@ -920,27 +927,28 @@ const SettingsTab = (props) => {
       return; // Exit the function if validation fails
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           133,
-          pidOverrideIndex,
+          settings.pidOverrideIndex,
           134,
-          Number(pidSP),
+          Number(settings.pidSP),
           135,
-          Number(pidKP),
+          Number(settings.pidKP),
           136,
-          Number(pidKI),
+          Number(settings.pidKI),
           137,
-          Number(pidKD),
+          Number(settings.pidKD),
           138,
-          Number(pidINIT),
+          Number(settings.pidINIT),
           139,
-          Number(pidDB),
+          Number(settings.pidDB),
           140,
-          Number(pidLL),
+          Number(settings.pidLL),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -951,7 +959,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -963,7 +970,7 @@ const SettingsTab = (props) => {
 
   // send array of AUTOCATCHER values to device
   const handleSendAutocatcher = async () => {
-    if (autocatcherDelay === "") {
+    if (settings.autocatcherDelay === "") {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -973,17 +980,18 @@ const SettingsTab = (props) => {
       return; // Exit the function if validation fails
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           141,
-          autocatcherIndex,
+          settings.autocatcherIndex,
           143,
-          Number(autocatcherDelay),
+          Number(settings.autocatcherDelay),
           158,
-          BValveTwinIndex,
+          settings.BValveTwinIndex,
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -994,7 +1002,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1006,7 +1013,10 @@ const SettingsTab = (props) => {
 
   // send array of Pressure Intermit values to device
   const handleSendPressureIntermit = async () => {
-    if (receivedPressureMaxPSI === "" || receivedPressureMinPSI === "") {
+    if (
+      settings.receivedPressureMaxPSI === "" ||
+      settings.receivedPressureMinPSI === ""
+    ) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -1015,7 +1025,8 @@ const SettingsTab = (props) => {
       });
       return; // Exit the function if validation fails
     } else if (
-      Number(receivedPressureMinPSI) > Number(receivedPressureMaxPSI)
+      Number(settings.receivedPressureMinPSI) >
+      Number(settings.receivedPressureMaxPSI)
     ) {
       Toast.show({
         type: "error",
@@ -1025,17 +1036,18 @@ const SettingsTab = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           159,
-          receivedPressureSourceIndex,
+          settings.receivedPressureSourceIndex,
           160,
-          Number(receivedPressureMaxPSI),
+          Number(settings.receivedPressureMaxPSI),
           161,
-          Number(receivedPressureMinPSI),
+          Number(settings.receivedPressureMinPSI),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1046,7 +1058,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1059,10 +1070,10 @@ const SettingsTab = (props) => {
   // send array of LP values to device
   const handleSendLP = async () => {
     if (
-      LPSensorMax === "" ||
-      LPSensorMin === "" ||
-      LPVoltageMax === "" ||
-      LPVoltageMin === ""
+      settings.LPSensorMax === "" ||
+      settings.LPSensorMin === "" ||
+      settings.LPVoltageMax === "" ||
+      settings.LPVoltageMin === ""
     ) {
       Toast.show({
         type: "error",
@@ -1071,14 +1082,14 @@ const SettingsTab = (props) => {
         visibilityTime: 4000,
       });
       return; // Exit the function if validation fails
-    } else if (Number(LPSensorMin) > Number(LPSensorMax)) {
+    } else if (Number(settings.LPSensorMin) > Number(settings.LPSensorMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
         text2: "The LP Sensor max must be more than LP Sensor min",
         visibilityTime: 4000,
       });
-    } else if (Number(LPVoltageMin) > Number(LPVoltageMax)) {
+    } else if (Number(settings.LPVoltageMin) > Number(settings.LPVoltageMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
@@ -1087,21 +1098,22 @@ const SettingsTab = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           100,
-          LPTypeIndex,
+          settings.LPTypeIndex,
           101,
-          Number(LPSensorMax),
+          Number(settings.LPSensorMax),
           102,
-          Number(LPSensorMin),
+          Number(settings.LPSensorMin),
           116,
-          Number(LPVoltageMax * 10),
+          Number(settings.LPVoltageMax * 10),
           117,
-          Number(LPVoltageMin * 10),
+          Number(settings.LPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1112,7 +1124,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1125,10 +1136,10 @@ const SettingsTab = (props) => {
   // send array of CP values to device
   const handleSendCP = async () => {
     if (
-      CPSensorMax === "" ||
-      CPSensorMin === "" ||
-      CPVoltageMax === "" ||
-      CPVoltageMin === ""
+      settings.CPSensorMax === "" ||
+      settings.CPSensorMin === "" ||
+      settings.CPVoltageMax === "" ||
+      settings.CPVoltageMin === ""
     ) {
       Toast.show({
         type: "error",
@@ -1137,14 +1148,14 @@ const SettingsTab = (props) => {
         visibilityTime: 3000,
       });
       return; // Exit the function if validation fails
-    } else if (Number(CPSensorMin) > Number(CPSensorMax)) {
+    } else if (Number(settings.CPSensorMin) > Number(settings.CPSensorMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
         text2: "The CP Sensor max must be more than CP Sensor min",
         visibilityTime: 4000,
       });
-    } else if (Number(CPVoltageMin) > Number(CPVoltageMax)) {
+    } else if (Number(settings.CPVoltageMin) > Number(settings.CPVoltageMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
@@ -1153,21 +1164,22 @@ const SettingsTab = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           103,
-          CPTypeIndex,
+          settings.CPTypeIndex,
           104,
-          Number(CPSensorMax),
+          Number(settings.CPSensorMax),
           105,
-          Number(CPSensorMin),
+          Number(settings.CPSensorMin),
           118,
-          Number(CPVoltageMax * 10),
+          Number(settings.CPVoltageMax * 10),
           119,
-          Number(CPVoltageMin * 10),
+          Number(settings.CPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1178,7 +1190,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1191,10 +1202,10 @@ const SettingsTab = (props) => {
   // send array of TP values to device
   const handleSendTP = async () => {
     if (
-      TPSensorMax === "" ||
-      TPSensorMin === "" ||
-      TPVoltageMax === "" ||
-      TPVoltageMin === ""
+      settings.TPSensorMax === "" ||
+      settings.TPSensorMin === "" ||
+      settings.TPVoltageMax === "" ||
+      settings.TPVoltageMin === ""
     ) {
       Toast.show({
         type: "error",
@@ -1203,14 +1214,14 @@ const SettingsTab = (props) => {
         visibilityTime: 3000,
       });
       return; // Exit the function if validation fails
-    } else if (Number(TPSensorMin) > Number(TPSensorMax)) {
+    } else if (Number(settings.TPSensorMin) > Number(settings.TPSensorMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
         text2: "The TP Sensor max must be more than TP Sensor min",
         visibilityTime: 4000,
       });
-    } else if (Number(TPVoltageMin) > Number(TPVoltageMax)) {
+    } else if (Number(settings.TPVoltageMin) > Number(settings.TPVoltageMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
@@ -1219,21 +1230,22 @@ const SettingsTab = (props) => {
       });
     } else {
       try {
+        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           106,
-          TPTypeIndex,
+          settings.TPTypeIndex,
           107,
-          Number(TPSensorMax),
+          Number(settings.TPSensorMax),
           108,
-          Number(TPSensorMin),
+          Number(settings.TPSensorMin),
           120,
-          Number(TPVoltageMax * 10),
+          Number(settings.TPVoltageMax * 10),
           121,
-          Number(TPVoltageMin * 10),
+          Number(settings.TPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");
-        await props.connectedDevice?.writeCharacteristicWithResponseForService(
+        await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
           UART_TX_CHARACTERISTIC_UUID,
           buffer.toString("base64")
@@ -1244,7 +1256,6 @@ const SettingsTab = (props) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
-        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1257,116 +1268,36 @@ const SettingsTab = (props) => {
   // function called in useEffect when load component to fetch data
   const fetchDataSettings = async () => {
     try {
-      await Receive.SettingsReceivedData(props.connectedDevice, {
-        setValveA,
-        setValveB,
-        setProductionMethodIndex,
-        setMissrunMax,
-        setFalseArrivalsIndex,
-        setWellDepth,
-        setHiLoModeIndex,
-        setHiLoHigh,
-        setHiLoLow,
-        setHiLoDelay,
-        setPidOverrideIndex,
-        setPidSP,
-        setPidKP,
-        setPidKI,
-        setPidKD,
-        setPidINIT,
-        setPidDB,
-        setPidLL,
-        setAutocatcherIndex,
-        setAutocatcherDelay,
-        setBValveTwinIndex,
-        setReceivedPressureSourceIndex,
-        setReceivedPressureMaxPSI,
-        setReceivedPressureMinPSI,
-        setLPTypeIndex,
-        setLPSensorMax,
-        setLPSensorMin,
-        setLPVoltageMax,
-        setLPVoltageMin,
-        setCPTypeIndex,
-        setCPSensorMax,
-        setCPSensorMin,
-        setCPVoltageMax,
-        setCPVoltageMin,
-        setTPTypeIndex,
-        setTPSensorMax,
-        setTPSensorMin,
-        setTPVoltageMax,
-        setTPVoltageMin,
+      await Receive.sendReqToGetData(connectedDevice, 2);
+      dispatchSettings(initialSettingsState);
+      const dataPromise = Receive.SettingsReceivedData(
+        connectedDevice,
+        dispatchSettings,
         setLoading,
-        setTitle,
-      });
+        setTitle
+      );
+      // start receiving data
+      await dataPromise;
     } catch (error) {
-      console.error("Error in receiving data:", error);
+      console.error("Error during fetching data:", error);
     }
   };
 
   // Initial load, call fetchData function with the corresponding data
   useEffect(() => {
-    // fetcha data if the device is connected
-    if (props.connectedDevice) {
-      const cleanup = fetchDataSettings();
-      return () => cleanup; // Clean up subscription on component unmount or when device changes
-    }
-  }, [props.connectedDevice]);
+    let isMounted = true;
+    const fetchData = async () => {
+      if (connectedDevice && isMounted) {
+        await fetchDataSettings();
+      }
+    };
 
-  // function run when clicking on refresh button
-  const onRefreshSettings = async () => {
-    try {
-      // call function to send request to device to get data
-      Receive.sendReqToGetData(props.connectedDevice, 2);
-      // start receiving data
-      await Receive.SettingsReceivedData(props.connectedDevice, {
-        setValveA,
-        setValveB,
-        setProductionMethodIndex,
-        setMissrunMax,
-        setFalseArrivalsIndex,
-        setWellDepth,
-        setHiLoModeIndex,
-        setHiLoHigh,
-        setHiLoLow,
-        setHiLoDelay,
-        setPidOverrideIndex,
-        setPidSP,
-        setPidKP,
-        setPidKI,
-        setPidKD,
-        setPidINIT,
-        setPidDB,
-        setPidLL,
-        setAutocatcherIndex,
-        setAutocatcherDelay,
-        setBValveTwinIndex,
-        setReceivedPressureSourceIndex,
-        setReceivedPressureMaxPSI,
-        setReceivedPressureMinPSI,
-        setLPTypeIndex,
-        setLPSensorMax,
-        setLPSensorMin,
-        setLPVoltageMax,
-        setLPVoltageMin,
-        setCPTypeIndex,
-        setCPSensorMax,
-        setCPSensorMin,
-        setCPVoltageMax,
-        setCPVoltageMin,
-        setTPTypeIndex,
-        setTPSensorMax,
-        setTPSensorMin,
-        setTPVoltageMax,
-        setTPVoltageMin,
-        setLoading,
-        setTitle,
-      });
-    } catch (error) {
-      console.error("Error during refresh:", error);
-    }
-  };
+    fetchData();
+
+    return () => {
+      isMounted = false; // Prevent state update after unmount
+    };
+  }, [connectedDevice]);
 
   // all settings sections by bloc
   // production method
@@ -1377,13 +1308,15 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select mode"}
           list={productionMethod}
-          selectedIndex={productionMethodIndex}
-          setSelectedIndex={setProductionMethodIndex}
+          selectedIndex={settings.productionMethodIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ productionMethodIndex: index })
+          }
         />
         <Text style={styles.titleSettings(width)}>Missrun max :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={missrunMax.toString()}
+          value={settings.missrunMax?.toString() || ""}
           onChangeText={handleChangeMissrunMax}
           keyboardType="numeric"
         />
@@ -1391,13 +1324,15 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={falseArrivals_hiLoMode}
-          selectedIndex={falseArrivalsIndex}
-          setSelectedIndex={setFalseArrivalsIndex}
+          selectedIndex={settings.falseArrivalsIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ falseArrivalsIndex: index })
+          }
         />
         <Text style={styles.titleSettings(width)}>Well depth :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={wellDepth.toString()}
+          value={settings.wellDepth?.toString() || ""}
           onChangeText={handleChangeWellDepth}
           keyboardType="numeric"
         />
@@ -1420,13 +1355,15 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={falseArrivals_hiLoMode}
-          selectedIndex={pidOverrideIndex}
-          setSelectedIndex={setPidOverrideIndex}
+          selectedIndex={settings.pidOverrideIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ pidOverrideIndex: index })
+          }
         />
         <Text style={styles.titleSettings(width)}>PID Set Point (SP) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={pidSP.toString()}
+          value={settings.pidSP?.toString() || ""}
           onChangeText={handleChangePidSP}
           keyboardType="numeric"
         />
@@ -1435,7 +1372,7 @@ const SettingsTab = (props) => {
             <Text style={styles.titleSettings(width)}>Kp (%) :</Text>
             <TextInput
               style={styles.inputSettings(width)}
-              value={pidKP.toString()}
+              value={settings.pidKP?.toString() || ""}
               onChangeText={handleChangePidKP}
               keyboardType="numeric"
             />
@@ -1444,7 +1381,7 @@ const SettingsTab = (props) => {
             <Text style={styles.titleSettings(width)}>Ki (%) :</Text>
             <TextInput
               style={styles.inputSettings(width)}
-              value={pidKI.toString()}
+              value={settings.pidKI?.toString() || ""}
               onChangeText={handleChangePidKI}
               keyboardType="numeric"
             />
@@ -1455,7 +1392,7 @@ const SettingsTab = (props) => {
             <Text style={styles.titleSettings(width)}>Kd (%) :</Text>
             <TextInput
               style={styles.inputSettings(width)}
-              value={pidKD.toString()}
+              value={settings.pidKD?.toString() || ""}
               onChangeText={handleChangePidKD}
               keyboardType="numeric"
             />
@@ -1464,7 +1401,7 @@ const SettingsTab = (props) => {
             <Text style={styles.titleSettings(width)}>INIT (%) :</Text>
             <TextInput
               style={styles.inputSettings(width)}
-              value={pidINIT.toString()}
+              value={settings.pidINIT?.toString() || ""}
               onChangeText={handleChangePidINIT}
               keyboardType="numeric"
             />
@@ -1473,14 +1410,14 @@ const SettingsTab = (props) => {
         <Text style={styles.titleSettings(width)}>PID Deadband (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={pidDB.toString()}
+          value={settings.pidDB?.toString() || ""}
           onChangeText={handleChangePidDB}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>PID Low Limit (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={pidLL.toString()}
+          value={settings.pidLL?.toString() || ""}
           onChangeText={handleChangePidLL}
           keyboardType="numeric"
         />
@@ -1503,34 +1440,34 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={LP_CP_TP_type}
-          selectedIndex={LPTypeIndex}
-          setSelectedIndex={setLPTypeIndex}
+          selectedIndex={settings.LPTypeIndex}
+          setSelectedIndex={(index) => dispatchSettings({ LPTypeIndex: index })}
         />
         <Text style={styles.titleSettings(width)}>LP Sensor max (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={LPSensorMax.toString()}
+          value={settings.LPSensorMax?.toString() || ""}
           onChangeText={handleChangeLPSensorMax}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>LP Sensor min (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={LPSensorMin.toString()}
+          value={settings.LPSensorMin?.toString() || ""}
           onChangeText={handleChangeLPSensorMin}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>LP voltage max (V) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={LPVoltageMax.toString()}
+          value={settings.LPVoltageMax?.toString() || ""}
           onChangeText={handleChangeLPVoltageMax}
           keyboardType="numbers-and-punctuation"
         />
         <Text style={styles.titleSettings(width)}>LP voltage min (V) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={LPVoltageMin.toString()}
+          value={settings.LPVoltageMin?.toString() || ""}
           onChangeText={handleChangeLPVoltageMin}
           keyboardType="numbers-and-punctuation"
         />
@@ -1553,34 +1490,34 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={LP_CP_TP_type}
-          selectedIndex={CPTypeIndex}
-          setSelectedIndex={setCPTypeIndex}
+          selectedIndex={settings.CPTypeIndex}
+          setSelectedIndex={(index) => dispatchSettings({ CPTypeIndex: index })}
         />
         <Text style={styles.titleSettings(width)}>CP Sensor max (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={CPSensorMax.toString()}
+          value={settings.CPSensorMax?.toString() || ""}
           onChangeText={handleChangeCPSensorMax}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>CP Sensor min (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={CPSensorMin.toString()}
+          value={settings.CPSensorMin?.toString() || ""}
           onChangeText={handleChangeCPSensorMin}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>CP voltage max (V) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={CPVoltageMax.toString()}
+          value={settings.CPVoltageMax?.toString() || ""}
           onChangeText={handleChangeCPVoltageMax}
           keyboardType="numbers-and-punctuation"
         />
         <Text style={styles.titleSettings(width)}>CP voltage min (V) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={CPVoltageMin.toString()}
+          value={settings.CPVoltageMin?.toString() || ""}
           onChangeText={handleChangeCPVoltageMin}
           keyboardType="numbers-and-punctuation"
         />
@@ -1603,34 +1540,34 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={LP_CP_TP_type}
-          selectedIndex={TPTypeIndex}
-          setSelectedIndex={setTPTypeIndex}
+          selectedIndex={settings.TPTypeIndex}
+          setSelectedIndex={(index) => dispatchSettings({ TPTypeIndex: index })}
         />
         <Text style={styles.titleSettings(width)}>TP Sensor max (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={TPSensorMax.toString()}
+          value={settings.TPSensorMax?.toString() || ""}
           onChangeText={handleChangeTPSensorMax}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>TP Sensor min (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={TPSensorMin.toString()}
+          value={settings.TPSensorMin?.toString() || ""}
           onChangeText={handleChangeTPSensorMin}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>TP voltage max (V) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={TPVoltageMax.toString()}
+          value={settings.TPVoltageMax?.toString() || ""}
           onChangeText={handleChangeTPVoltageMax}
           keyboardType="numbers-and-punctuation"
         />
         <Text style={styles.titleSettings(width)}>TP voltage min (V) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={TPVoltageMin.toString()}
+          value={settings.TPVoltageMin?.toString() || ""}
           onChangeText={handleChangeTPVoltageMin}
           keyboardType="numbers-and-punctuation"
         />
@@ -1653,27 +1590,29 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={falseArrivals_hiLoMode}
-          selectedIndex={hiLoModeIndex}
-          setSelectedIndex={setHiLoModeIndex}
+          selectedIndex={settings.hiLoModeIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ hiLoModeIndex: index })
+          }
         />
         <Text style={styles.titleSettings(width)}>HiLo high Threshold :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={hiLoHigh.toString()}
+          value={settings.hiLoHigh?.toString() || ""}
           onChangeText={handleChangeHiLoHigh}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>HiLo low Threshold :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={hiLoLow.toString()}
+          value={settings.hiLoLow?.toString() || ""}
           onChangeText={handleChangeHiLoLow}
           keyboardType="numeric"
         />
         <Text style={styles.titleSettings(width)}>HiLo Delay :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={hiLoDelay.toString()}
+          value={settings.hiLoDelay?.toString() || ""}
           onChangeText={handleChangeHiLoDelay}
           keyboardType="numeric"
         />
@@ -1696,13 +1635,15 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={falseArrivals_hiLoMode}
-          selectedIndex={autocatcherIndex}
-          setSelectedIndex={setAutocatcherIndex}
+          selectedIndex={settings.autocatcherIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ autocatcherIndex: index })
+          }
         />
         <Text style={styles.titleSettings(width)}>Delay (sec) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={autocatcherDelay.toString()}
+          value={settings.autocatcherDelay?.toString() || ""}
           onChangeText={handleChangeAutocatcherDelay}
           keyboardType="numeric"
         />
@@ -1710,8 +1651,10 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={falseArrivals_hiLoMode}
-          selectedIndex={BValveTwinIndex}
-          setSelectedIndex={setBValveTwinIndex}
+          selectedIndex={settings.BValveTwinIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ BValveTwinIndex: index })
+          }
         />
       </View>
       <View style={styles.containerBtnText}>
@@ -1734,15 +1677,17 @@ const SettingsTab = (props) => {
         <Dropdown
           dropdownTitle={"Select option"}
           list={["Line", "Tubing", "Casing"]}
-          selectedIndex={receivedPressureSourceIndex}
-          setSelectedIndex={setReceivedPressureSourceIndex}
+          selectedIndex={settings.receivedPressureSourceIndex}
+          setSelectedIndex={(index) =>
+            dispatchSettings({ receivedPressureSourceIndex: index })
+          }
         />
         <Text style={styles.titleSettings(width)}>
           Pressure intermit Max PSI :
         </Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={receivedPressureMaxPSI.toString()}
+          value={settings.receivedPressureMaxPSI?.toString() || ""}
           onChangeText={handleChangeMaxPSI}
           keyboardType="numeric"
         />
@@ -1751,7 +1696,7 @@ const SettingsTab = (props) => {
         </Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={receivedPressureMinPSI.toString()}
+          value={settings.receivedPressureMinPSI?.toString() || ""}
           onChangeText={handleChangeMinPSI}
           keyboardType="numeric"
         />
@@ -1837,48 +1782,54 @@ const SettingsTab = (props) => {
 
   return (
     <KeyboardAwareScrollView
-      extraScrollHeight={height * 0.2} // Space above the keyboard
+      extraScrollHeight={120} // Space above the keyboard
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       enableResetScrollToCoords={false}
+      enableOnAndroid={true}
+      contentContainerStyle={{ flexGrow: 1 }}
+      extraHeight={100}
+      enableAutomaticScroll={true}
     >
-      <RefreshBtn onPress={() => onRefreshSettings()} />
-      <View style={styles.valveContainer}>
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          <Valve
-            connectedDevice={props.connectedDevice}
-            fetchDataSettings={fetchDataSettings}
-            title={"Valve A"}
-            status={valveA === 1 ? true : false}
-            valve={"A"}
-          />
+      <View>
+        <RefreshBtn onPress={() => fetchDataSettings()} />
+        <View style={styles.valveContainer}>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Valve
+              connectedDevice={connectedDevice}
+              fetchDataSettings={fetchDataSettings}
+              title={"Valve A"}
+              status={settings.valveA === 1 ? true : false}
+              valve={"A"}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Valve
+              connectedDevice={connectedDevice}
+              fetchDataSettings={fetchDataSettings}
+              title={"Valve B"}
+              status={settings.valveB === 1 ? true : false}
+              valve={"B"}
+            />
+          </View>
         </View>
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          <Valve
-            connectedDevice={props.connectedDevice}
-            fetchDataSettings={fetchDataSettings}
-            title={"Valve B"}
-            status={valveB === 1 ? true : false}
-            valve={"B"}
-          />
-        </View>
-      </View>
 
-      <View style={[styles.settingsWrapper, styles.marginBottomContainer]}>
-        <Text style={styles.valveTitle}>Controller configuration</Text>
-        <View style={styles.settingsSectionContainer(width)}>
-          <View style={styless.masonryContainer}>{renderColumns()}</View>
+        <View style={[styles.settingsWrapper, styles.marginBottomContainer]}>
+          <Text style={styles.valveTitle}>Controller configuration</Text>
+          <View style={styles.settingsSectionContainer(width)}>
+            <View style={styless.masonryContainer}>{renderColumns()}</View>
+          </View>
         </View>
+        <Loading loading={loading} title={title} />
       </View>
-      <Loading loading={loading} title={title} />
     </KeyboardAwareScrollView>
   );
 };

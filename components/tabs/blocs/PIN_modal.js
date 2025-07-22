@@ -20,7 +20,6 @@ const PIN_modal = ({
   setPin,
   handleSubmitPIN,
   navigation,
-  setActiveTab,
 }) => {
   const { width } = useWindowDimensions();
   return (
@@ -38,10 +37,7 @@ const PIN_modal = ({
               onPress={() => {
                 setModalVisible(false);
                 setTimeout(() => {
-                  setActiveTab(0);
-                  navigation.navigate("DeviceSettings", {
-                    initialTab: 0,
-                  });
+                  navigation.goBack();
                 }, 300);
               }}
             >

@@ -24,8 +24,8 @@ import Loading from "./blocs/Loading";
 import PIN_modal from "./blocs/PIN_modal";
 import ButtonUI from "../ButtonUI";
 
-const TestTab2 = (props) => {
-  const { setActiveTab, navigation, connectedDevice } = props;
+const TestTab = ({ navigation, route }) => {
+  const { connectedDevice } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [pin, setPin] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -209,7 +209,6 @@ const TestTab2 = (props) => {
           setPin={setPin}
           handleSubmitPIN={handleSubmitPIN}
           navigation={navigation}
-          setActiveTab={setActiveTab}
         />
       </View>
       {isAuthenticated ? (
@@ -265,4 +264,4 @@ const TestTab2 = (props) => {
   );
 };
 
-export default TestTab2;
+export default TestTab;

@@ -66,7 +66,8 @@ const Valve = ({
     }
   };
 
-  const thumbWidthHeight = width < 600 ? 30 : width < 800 ? 38 : width < 950 ? 38 : 47;
+  const thumbWidthHeight =
+    width < 600 ? 30 : width < 800 ? 38 : width < 950 ? 38 : 47;
   const switchWidth =
     width < 600 ? 80 : width < 800 ? 80 : width < 950 ? 100 : 120;
   const switchHeight =
@@ -91,8 +92,8 @@ const Valve = ({
           renderActiveText={false}
           renderInActiveText={false}
           renderInsideCircle={() => (
-            <Text style={{ color: '#fff', fontSize }}>
-              {isEnabledValve ? 'ON' : 'OFF'}
+            <Text style={{ color: "#fff", fontSize }}>
+              {isEnabledValve ? "ON" : "OFF"}
             </Text>
           )}
           switchLeftPx={1.5}

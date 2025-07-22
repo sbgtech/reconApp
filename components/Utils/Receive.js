@@ -9,26 +9,66 @@ import { Platform } from "react-native";
 
 export class Receive {
   // function listen to receive wellName
-  static async ReceiveWellName(device, setWellName) {
-    // Monitor characteristic for service
-    device?.monitorCharacteristicForService(
-      UART_SERVICE_UUID,
-      UART_RX_CHARACTERISTIC_UUID,
-      (error, characteristic) => {
-        if (error) {
-          console.log("Characteristic monitoring error:", error);
-          return;
+  static async ReceiveWellName(device, setWellName, setLoading, setTitle) {
+    return new Promise((resolve, reject) => {
+      setLoading(true);
+      setTitle("Loading...");
+
+      let timeout;
+      let subscription;
+      let dataReceived = false;
+
+      const cleanup = () => {
+        clearTimeout(timeout);
+        if (subscription && typeof subscription.remove === "function") {
+          subscription.remove();
         }
-        // Check if data is received
-        const str = Buffer.from(characteristic.value, "base64").toString(
-          "utf-8"
-        );
-        if (str.includes("wellname")) {
-          let result = str.split(" ").slice(1).join(" ").trim();
-          setWellName(result);
+        setTimeout(() => setLoading(false), 400);
+      };
+
+      timeout = setTimeout(() => {
+        if (!dataReceived) {
+          cleanup();
+          console.log("Data not received within 7 seconds (Wellname)");
+          Toast.show({
+            type: "error",
+            text1: "Warning",
+            text2: "No Received Wellname",
+            visibilityTime: 3000,
+          });
+          reject("Timeout: No Wellname received");
         }
-      }
-    );
+      }, 7000);
+      subscription = device?.monitorCharacteristicForService(
+        UART_SERVICE_UUID,
+        UART_RX_CHARACTERISTIC_UUID,
+        (error, characteristic) => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
+          try {
+            const str = Buffer.from(characteristic.value, "base64").toString(
+              "utf-8"
+            );
+            if (str.includes("wellname")) {
+              let result = str.split(" ").slice(1).join(" ").trim();
+              setWellName(result);
+              dataReceived = true;
+              cleanup();
+              resolve(true);
+            }
+          } catch (err) {
+            console.log("Error parsing data:", err);
+            // Wait for other packets; don't reject yet
+          }
+        }
+      );
+    }).catch((err) => {
+      console.log("Receive failed:", err);
+      return false;
+    });
   }
 
   // function listen to receive data for well status page

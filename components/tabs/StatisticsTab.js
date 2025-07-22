@@ -18,8 +18,9 @@ import {
 } from "../Utils/Constants";
 import Toast from "react-native-toast-message";
 
-const StatisticsTab = (props) => {
+const StatisticsTab = ({ route }) => {
   const { width } = useWindowDimensions();
+  const { connectedDevice } = route.params;
   // the loading state, default is false
   const [loading, setLoading] = useState(false);
   // title of loading modal
@@ -52,7 +53,7 @@ const StatisticsTab = (props) => {
     try {
       fetchDataStatistic();
       const buffer = Buffer.from("RST1 \n", "utf-8");
-      await props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -76,7 +77,7 @@ const StatisticsTab = (props) => {
     try {
       fetchDataStatistic();
       const buffer = Buffer.from("RST2 \n", "utf-8");
-      await props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -100,7 +101,7 @@ const StatisticsTab = (props) => {
     try {
       fetchDataStatistic();
       const buffer = Buffer.from("RST3 \n", "utf-8");
-      await props.connectedDevice?.writeCharacteristicWithResponseForService(
+      await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
         buffer.toString("base64")
@@ -122,17 +123,18 @@ const StatisticsTab = (props) => {
   // function called in useEffect when load component to fetch data
   const fetchDataStatistic = async () => {
     try {
-      // Clear previous state before fetching fresh data
+      await Receive.sendReqToGetData(connectedDevice, 3);
       dispatchStatistics(initialStatisticsState);
-      // Request fresh data
-      await Receive.StatisticsReceivedData(
-        props.connectedDevice,
+      const dataPromise = Receive.StatisticsReceivedData(
+        connectedDevice,
         dispatchStatistics,
         setLoading,
         setTitle
       );
+      // start receiving data
+      await dataPromise;
     } catch (error) {
-      console.error("Error in receiving data in statistic page:", error);
+      console.error("Error during fetching data:", error);
     }
   };
 
@@ -141,7 +143,7 @@ const StatisticsTab = (props) => {
     let isMounted = true;
 
     const fetchData = async () => {
-      if (props.connectedDevice && isMounted) {
+      if (connectedDevice && isMounted) {
         await fetchDataStatistic();
       }
     };
@@ -151,31 +153,11 @@ const StatisticsTab = (props) => {
     return () => {
       isMounted = false; // Prevent state update after unmount
     };
-  }, [props.connectedDevice]);
-
-  // function run when clicking on refresh button
-  const onRefreshStatistic = async () => {
-    try {
-      // Clear previous state for actual refresh
-      dispatchStatistics(initialStatisticsState);
-      const dataPromise = Receive.StatisticsReceivedData(
-        props.connectedDevice,
-        dispatchStatistics,
-        setLoading,
-        setTitle
-      );
-      // call function to send request to device to get data
-      await Receive.sendReqToGetData(props.connectedDevice, 3);
-      // start receiving data
-      await dataPromise;
-    } catch (error) {
-      console.error("Error during refresh:", error);
-    }
-  };
+  }, [connectedDevice]);
 
   return (
     <ScrollView>
-      <RefreshBtn onPress={() => onRefreshStatistic()} />
+      <RefreshBtn onPress={() => fetchDataStatistic()} />
       <View style={[styles.statisticWrapper, styles.marginBottomContainer]}>
         <Text style={styles.valveTitle}>Arrival statistics</Text>
         <View style={styles.statisticSectionContainer(width)}>

@@ -8,8 +8,9 @@ import Loading from "./blocs/Loading";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useCallback } from "react";
 
-const TimerTab = (props) => {
+const TimerTab = ({ route }) => {
   const { width } = useWindowDimensions();
+  const { connectedDevice } = route.params;
   // the loading state, default is false
   const [loading, setLoading] = useState(false);
   // title of loading modal
@@ -35,18 +36,18 @@ const TimerTab = (props) => {
   // Fetch timer data
   const fetchDataTimer = async () => {
     try {
-      // Clear previous state before fetching fresh data
+      await Receive.sendReqToGetData(connectedDevice, 1);
       dispatchTimers(initialTimersState);
-
-      // Request fresh data
-      await Receive.TimerReceivedData(
-        props.connectedDevice,
+      const dataPromise = Receive.TimerReceivedData(
+        connectedDevice,
         dispatchTimers,
         setLoading,
         setTitle
       );
+      // Receive and parse data again
+      await dataPromise;
     } catch (error) {
-      console.error("Error in receiving data in timer page:", error);
+      console.error("Error during fetching data:", error);
     }
   };
 
@@ -54,7 +55,7 @@ const TimerTab = (props) => {
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
-      if (props.connectedDevice && isMounted) {
+      if (connectedDevice && isMounted) {
         await fetchDataTimer();
       }
     };
@@ -62,28 +63,7 @@ const TimerTab = (props) => {
     return () => {
       isMounted = false; // Prevent state update after unmount
     };
-  }, [props.connectedDevice]);
-
-  // Refresh logic
-  const onRefreshTimer = async () => {
-    try {
-      // Clear previous state for actual refresh
-      dispatchTimers(initialTimersState);
-      const dataPromise = Receive.TimerReceivedData(
-        props.connectedDevice,
-        dispatchTimers,
-        setLoading,
-        setTitle
-      );
-      // Request new data from the device
-      await Receive.sendReqToGetData(props.connectedDevice, 1);
-
-      // Receive and parse data again
-      await dataPromise;
-    } catch (error) {
-      console.error("Error during refresh:", error);
-    }
-  };
+  }, [connectedDevice]);
 
   return (
     <KeyboardAwareScrollView
@@ -97,10 +77,10 @@ const TimerTab = (props) => {
       enableAutomaticScroll={true}
     >
       <View>
-        <RefreshBtn onPress={() => onRefreshTimer()} />
+        <RefreshBtn onPress={() => fetchDataTimer()} />
         <View style={styles.timersContainer(width)}>
           <Timer
-            connectedDevice={props.connectedDevice}
+            connectedDevice={connectedDevice}
             title={"Open timer"}
             address1={200}
             address2={201}
@@ -109,7 +89,7 @@ const TimerTab = (props) => {
             fetchDataTimer={fetchDataTimer}
           />
           <Timer
-            connectedDevice={props.connectedDevice}
+            connectedDevice={connectedDevice}
             title={"Shutin timer"}
             address1={202}
             address2={203}
@@ -118,7 +98,7 @@ const TimerTab = (props) => {
             fetchDataTimer={fetchDataTimer}
           />
           <Timer
-            connectedDevice={props.connectedDevice}
+            connectedDevice={connectedDevice}
             title={"Afterflow timer"}
             address1={204}
             address2={205}
@@ -127,7 +107,7 @@ const TimerTab = (props) => {
             fetchDataTimer={fetchDataTimer}
           />
           <Timer
-            connectedDevice={props.connectedDevice}
+            connectedDevice={connectedDevice}
             title={"Mandatory shutin timer"}
             address1={206}
             address2={207}

@@ -324,7 +324,7 @@ export default function Home({ navigation, route }) {
           // setLoginModalVisible(true);
           // setSelectedDevice(selectedDevice);
           // console.log("selectedDevice", selectedDevice);
-          navigation.navigate("DeviceSettings", { initialTab: 0 });
+          navigation.navigate("Menu");
         });
     } catch (error) {
       // error connecting to device

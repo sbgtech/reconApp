@@ -7,8 +7,9 @@ import RefreshBtn from "./blocs/RefreshBtn";
 import { Receive } from "../Utils/Receive";
 import Loading from "./blocs/Loading";
 
-const WellStatus = (props) => {
+const WellStatus = ({ route }) => {
   const { width } = useWindowDimensions();
+  const { connectedDevice } = route.params;
   // the loading state, default is false
   const [loading, setLoading] = useState(false);
   // title of loading modal
@@ -58,63 +59,39 @@ const WellStatus = (props) => {
 
   const fetchDataWellStatus = async () => {
     try {
-      // Clear previous state before fetching fresh data
+      await Receive.sendReqToGetData(connectedDevice, 0);
       dispatchWellStatus(initialWellStatusState);
-
-      // Request fresh data
-      await Receive.WellStatusReceivedData(
-        props.connectedDevice,
+      const dataPromise = Receive.WellStatusReceivedData(
+        connectedDevice,
         dispatchWellStatus,
         setLoading,
         setTitle
       );
+      await dataPromise;
+      // Receive and parse data again
     } catch (error) {
-      console.error("Error in receiving data in well status page:", error);
+      console.error("Error during fetching data:", error);
     }
   };
 
   // Initial load, call WellStatusReceivedData function with the corresponding data
   useEffect(() => {
     let isMounted = true;
-
     const fetchData = async () => {
-      if (props.connectedDevice && isMounted) {
+      if (connectedDevice && isMounted) {
         await fetchDataWellStatus();
       }
     };
-
     fetchData();
-
     return () => {
       isMounted = false; // Prevent state update after unmount
     };
-  }, [props.connectedDevice]);
-
-  // function run when clicking on refresh button
-  const onRefreshWellStatus = async () => {
-    try {
-      // Clear previous state for actual refresh
-      dispatchWellStatus(initialWellStatusState);
-      const dataPromise = Receive.WellStatusReceivedData(
-        props.connectedDevice,
-        dispatchWellStatus,
-        setLoading,
-        setTitle
-      );
-
-      // Request new data from the device
-      await Receive.sendReqToGetData(props.connectedDevice, 0);
-      await dataPromise;
-      // Receive and parse data again
-    } catch (error) {
-      console.error("Error during refresh:", error);
-    }
-  };
+  }, [connectedDevice]);
 
   return (
     <ScrollView>
       <View style={[styles.container, styles.marginBottomContainer]}>
-        <RefreshBtn onPress={() => onRefreshWellStatus()} />
+        <RefreshBtn onPress={() => fetchDataWellStatus()} />
         <View style={styles.statusContainer(width)}>
           <View style={styles.statusWrapper(width)}>
             <Text style={styles.statusText(width)}>Plunger state</Text>

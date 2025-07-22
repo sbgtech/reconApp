@@ -18,7 +18,7 @@ export const styles = {
   /* ------------------------------ */
   // RefreshBtn.js
   refreshBtnWrapper: {
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 16,
   },
   // RefreshBtn.js
@@ -27,9 +27,39 @@ export const styles = {
     height: width < 600 ? 36 : width < 800 ? 36 : width < 950 ? 44 : 44,
     maxHeight: 90,
   }),
+  /* ------------------------------ */
+  // MenuItem.js
+  menuItemView: (width) => ({
+    backgroundColor: "#fff",
+    marginHorizontal: 14,
+    marginVertical: width < 600 ? 4 : 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 12,
+  }),
+  // MenuItem.js
+  menuIconView: (width) => ({
+    padding: width < 600 ? 14 : width < 800 ? 10 : width < 950 ? 15 : 16,
+    backgroundColor: "#0055a4",
+  }),
+  // MenuItem.js
+  menuTextView: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 4,
+  },
+  // MenuItem.js
+  menuTextSize: (width) => ({
+    fontSize: width < 600 ? 18 : width < 800 ? 16 : width < 950 ? 18 : 22,
+  }),
+  /* ------------------------------ */
   // WellStatusTab.js
   statusContainer: (width) => ({
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 16,
     padding: 14,
     backgroundColor: "#eeeeee",
@@ -85,7 +115,7 @@ export const styles = {
   }),
   // WellStatusTab.js
   arrivalContainer: {
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 16,
     padding: 14,
     backgroundColor: "#eeeeee",
@@ -145,7 +175,7 @@ export const styles = {
   }),
   // WellStatusTab.js
   telemetryDataContainer: {
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 16,
     padding: 14,
     backgroundColor: "#eeeeee",
@@ -203,7 +233,7 @@ export const styles = {
     flexWrap: width > 600 ? "wrap" : "nowrap",
     justifyContent: width > 600 ? "space-between" : "flex-start",
     gap: width > 600 ? 30 : 20,
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: width > 600 ? 25 : 15,
     marginBottom: width > 600 ? 50 : 50,
   }),
@@ -312,7 +342,7 @@ export const styles = {
   /* ------------------------------------------- */
   // SettingsTab.js
   settingsWrapper: {
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 14,
     padding: 14,
     backgroundColor: "#eeeeee",
@@ -401,7 +431,7 @@ export const styles = {
   /* ------------------------------------------- */
   // Valve.js
   valveWrapper: {
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 14,
     // padding: 16,
     paddingHorizontal: width < 600 ? 16 : width > 980 ? 25 : 20,
@@ -418,7 +448,7 @@ export const styles = {
   /* ------------------------------------------- */
   // StatisticsTab.js
   statisticWrapper: {
-    marginHorizontal: 26,
+    marginHorizontal: 14,
     marginTop: 14,
     padding: 14,
     backgroundColor: "#eeeeee",
@@ -473,7 +503,8 @@ export const styles = {
   // TestTab.js
   box: {
     flex: 1,
-    // justifyContent: "flex-end",
+    marginBottom:
+      Platform.OS === "android" ? marginBottomAndroid : marginBottomIOS,
   },
   // TestTab.js
   testTitle: (width) => ({
@@ -484,9 +515,9 @@ export const styles = {
   inputTestContainer: (width) => ({
     flexDirection: "row",
     alignItems: "center",
-    height: width < 600 ? 48 : width < 800 ? 48 : width < 950 ? 63 : 73,
+    height: width < 600 ? 52 : width < 800 ? 48 : width < 950 ? 63 : 73,
     padding: 5,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     marginBottom: 10,
   }),
   // TestTab.js
@@ -521,6 +552,7 @@ export const styles = {
     flexDirection: "row",
     justifyContent: "space-between",
     textAlign: "center",
+    flexWrap: "wrap",
   },
   // TestTab.js
   msgView: {
@@ -712,13 +744,13 @@ export const styles = {
     borderWidth: 0.5,
     width: "100%",
     maxWidth: "100%",
-    height: width < 600 ? 38 : width < 800 ? 36 : width < 950 ? 44 : 44,
-    fontSize: width < 600 ? 16 : width < 800 ? 16 : width < 950 ? 22 : 24,
+    height: width < 600 ? 40 : width < 800 ? 38 : width < 950 ? 44 : 44,
+    fontSize: width < 600 ? 14 : width < 800 ? 14 : width < 950 ? 22 : 24,
   }),
   /* ---------------------------- */
   // TabView.js
   deviceBloc: {
-    marginHorizontal: 15,
+    marginHorizontal: 14,
     marginVertical: 10,
   },
   // TabView.js
@@ -750,9 +782,9 @@ export const styles = {
   }),
   // TabView.js
   deviceBtns: {
-    paddingHorizontal: 12,
-    marginRight: 10,
-    marginTop: 6,
+    // paddingHorizontal: 12,
+    marginHorizontal: 0,
+    // marginTop: 6,
   },
   // TabView.js
   tabsContainer: {
