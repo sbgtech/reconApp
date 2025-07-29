@@ -28,6 +28,54 @@ export const styles = {
     maxHeight: 90,
   }),
   /* ------------------------------ */
+  // Menu.js --> Modal
+  renameModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  renameModalContent: (width) => ({
+    width:
+      width < 600 ? "80%" : width < 800 ? "60%" : width < 950 ? "70%" : "60%",
+    backgroundColor: "white",
+    padding: 20,
+    elevation: 5, // For Android shadow
+    shadowColor: "#000", // For iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  }),
+  renameModalCurrentNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+  },
+  renameModalLabel: (width) => ({
+    fontSize: width < 600 ? 16 : width < 800 ? 16 : width < 950 ? 22 : 24,
+    marginBottom: 10,
+    fontWeight: "bold",
+    textAlign: "center",
+  }),
+  renameModalInput: (width) => ({
+    borderWidth: 1,
+    borderColor: "#0055a4",
+    padding: width < 600 ? 8 : width < 800 ? 8 : width < 950 ? 10 : 12,
+    marginBottom: 14,
+    fontSize: width < 600 ? 14 : width < 800 ? 14 : width < 950 ? 22 : 24,
+  }),
+  renameModalButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+  },
+  renameButton: (width) => ({
+    paddingHorizontal:
+      width < 600 ? 14 : width < 800 ? 14 : width < 950 ? 22 : 24,
+    paddingVertical: width < 600 ? 6 : width < 800 ? 6 : width < 950 ? 8 : 10,
+  }),
+  /* ------------------------------ */
   // MenuItem.js
   menuItemView: (width) => ({
     backgroundColor: "#fff",
@@ -41,9 +89,13 @@ export const styles = {
   }),
   // MenuItem.js
   menuIconView: (width) => ({
-    padding: width < 600 ? 14 : width < 800 ? 10 : width < 950 ? 15 : 16,
+    padding: width < 600 ? 14 : width < 800 ? 12 : width < 950 ? 16 : 18,
     backgroundColor: "#0055a4",
   }),
+  // MenuItem.js
+  menuIconSize: (width) =>
+    width < 600 ? 20 : width < 800 ? 20 : width < 950 ? 24 : 30,
+
   // MenuItem.js
   menuTextView: {
     flex: 1,
@@ -54,7 +106,7 @@ export const styles = {
   },
   // MenuItem.js
   menuTextSize: (width) => ({
-    fontSize: width < 600 ? 18 : width < 800 ? 16 : width < 950 ? 18 : 22,
+    fontSize: width < 600 ? 18 : width < 800 ? 16 : width < 950 ? 20 : 24,
   }),
   /* ------------------------------ */
   // WellStatusTab.js
@@ -738,10 +790,10 @@ export const styles = {
   }),
   // PIN_modal.js
   PINinput: (width) => ({
-    backgroundColor: "#fff",
-    paddingHorizontal: 10,
-    marginBottom: 16,
-    borderWidth: 0.5,
+    borderColor: "#0055a4",
+    paddingHorizontal: 8,
+    marginBottom: 14,
+    borderWidth: 1,
     width: "100%",
     maxWidth: "100%",
     height: width < 600 ? 40 : width < 800 ? 38 : width < 950 ? 44 : 44,

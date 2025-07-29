@@ -19,6 +19,8 @@ import Login_modal from "./tabs/blocs/Login_modal";
 import Wellname_modal from "./tabs/blocs/Wellname_modal";
 import ReelNotification from "./ReelNotification";
 import { useRef } from "react";
+import * as FileSystem from "expo-file-system";
+import { loadDeviceNameMap } from "./Utils/deviceNameStorage";
 
 // create new instance for the BleManager module
 const bleManager = new BleManager();
@@ -31,24 +33,25 @@ export default function Home({ navigation, route }) {
   const [scanning, setScanning] = useState(false);
   // an array of available devices
   const [devices, setDevices] = useState([]);
+  const [deviceNameMap, setDeviceNameMap] = useState({});
   // create new Set of the discovered devices to set thems into devices array
   const discoveredDevicesRef = useRef(new Set());
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [loginModalVisible, setLoginModalVisible] = useState(false);
-  const [wellNameModalVisible, setWellNameModalVisible] = useState(false);
-  const [pin, setPin] = useState("");
-  const [wellname, setWellname] = useState("");
-  const [loginIsIndicatorShown, setLoginIsIndicatorShown] = useState(false);
-  const [isWellNameIndicatorShown, setIsWellNameIndicatorShown] =
-    useState(false);
-  const [selectedDevice, setSelectedDevice] = useState(null); // Store selected device
-  const lastSixDigits = (foundWell) => {
-    return foundWell.unitid.slice(-6);
-  };
-  const [showNotification, setShowNotification] = useState(false);
-  const unit = "345678";
-  const [unitid, setUnitid] = React.useState("");
+  // const [loginModalVisible, setLoginModalVisible] = useState(false);
+  // const [wellNameModalVisible, setWellNameModalVisible] = useState(false);
+  // const [pin, setPin] = useState("");
+  // const [wellname, setWellname] = useState("");
+  // const [loginIsIndicatorShown, setLoginIsIndicatorShown] = useState(false);
+  // const [isWellNameIndicatorShown, setIsWellNameIndicatorShown] =
+  //   useState(false);
+  // const [selectedDevice, setSelectedDevice] = useState(null); // Store selected device
+  // const lastSixDigits = (foundWell) => {
+  //   return foundWell.unitid.slice(-6);
+  // };
+  // const [showNotification, setShowNotification] = useState(false);
+  // const unit = "345678";
+  // const [unitid, setUnitid] = React.useState("");
 
   // Request Bluetooth permissions
   // Ask user when he open the app to allow and activate position and bluetooth
@@ -90,6 +93,14 @@ export default function Home({ navigation, route }) {
     return false;
   };
 
+  useEffect(() => {
+    const loadNames = async () => {
+      const nameMap = await loadDeviceNameMap();
+      setDeviceNameMap(nameMap);
+    };
+    loadNames();
+  }, []);
+
   // Initial load
   useEffect(() => {
     // when load this component it check the bluetooth state
@@ -98,22 +109,18 @@ export default function Home({ navigation, route }) {
       setBluetoothState(state);
     };
     checkBluetoothState();
-    // Set up a listener for Bluetooth state changes
-    const checkState = async () => {
-      // read the state of bluetooth with ble plx module and set it into our state
-      const subscription = await bleManager.onStateChange((state) => {
-        setBluetoothState(state);
-        if (state !== "PoweredOn") {
-          // if bluetooth or posiition are deactivates, it show an alert to activate them
-          Alert.alert(
-            "Info",
-            "Please make sure to activate Bluetooth and position for better usage."
-          );
-        }
-      }, true);
-      return () => subscription.remove(); // Clean up listener on unmount
-    };
-    checkState();
+    // read the state of bluetooth with ble plx module and set it into our state
+    const subscription = bleManager.onStateChange((state) => {
+      setBluetoothState(state);
+      if (state !== "PoweredOn") {
+        // if bluetooth or posiition are deactivates, it show an alert to activate them
+        Alert.alert(
+          "Info",
+          "Please make sure to activate Bluetooth and position for better usage."
+        );
+      }
+    }, true);
+    return () => subscription.remove(); // Clean up listener on unmount
   }, []);
 
   useEffect(() => {
@@ -173,141 +180,141 @@ export default function Home({ navigation, route }) {
   };
 
   // Function to handle the login process
-  const handleSubmitPIN = async () => {
-    if (pin.length === 6) {
-      if (pin === unit) {
-        setLoginIsIndicatorShown(true);
-        setTimeout(() => {
-          Toast.show({
-            type: "success",
-            text1: "Successfully OTP",
-            text2: `Your OTP is ${pin}`,
-            visibilityTime: 5000,
-          });
-          setLoginIsIndicatorShown(false);
-          setLoginModalVisible(false);
-          if (selectedDevice) {
-            navigation.navigate("DeviceSettings", { initialTab: 0 });
-          }
-          setPin("");
-        }, 2000);
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Invalid PIN",
-          visibilityTime: 3000,
-        });
-        setPin("");
-      }
-    }
-  };
+  // const handleSubmitPIN = async () => {
+  //   if (pin.length === 6) {
+  //     if (pin === unit) {
+  //       setLoginIsIndicatorShown(true);
+  //       setTimeout(() => {
+  //         Toast.show({
+  //           type: "success",
+  //           text1: "Successfully OTP",
+  //           text2: `Your OTP is ${pin}`,
+  //           visibilityTime: 5000,
+  //         });
+  //         setLoginIsIndicatorShown(false);
+  //         setLoginModalVisible(false);
+  //         if (selectedDevice) {
+  //           navigation.navigate("DeviceSettings", { initialTab: 0 });
+  //         }
+  //         setPin("");
+  //       }, 2000);
+  //     } else {
+  //       Toast.show({
+  //         type: "error",
+  //         text1: "Error",
+  //         text2: "Invalid PIN",
+  //         visibilityTime: 3000,
+  //       });
+  //       setPin("");
+  //     }
+  //   }
+  // };
 
-  const openWellnameModal = async () => {
-    await disconnectDevice();
-    setLoginModalVisible(false);
-    setTimeout(() => {
-      setWellNameModalVisible(true);
-    }, 500);
-  };
+  // const openWellnameModal = async () => {
+  //   await disconnectDevice();
+  //   setLoginModalVisible(false);
+  //   setTimeout(() => {
+  //     setWellNameModalVisible(true);
+  //   }, 500);
+  // };
 
   // Function to handle the well name
-  const handleSubmitWellName = async () => {
-    try {
-      setIsWellNameIndicatorShown(true);
-      // Make an API request to check if the well name exists
-      const response = await fetch(
-        `https://mocki.io/v1/6c5b4f8d-e439-4c04-ae72-fd019dfc4dbb`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // body: JSON.stringify({ wellname: wellname }),
-        }
-      );
-      const data = await response.json();
+  // const handleSubmitWellName = async () => {
+  //   try {
+  //     setIsWellNameIndicatorShown(true);
+  //     // Make an API request to check if the well name exists
+  //     const response = await fetch(
+  //       `https://mocki.io/v1/6c5b4f8d-e439-4c04-ae72-fd019dfc4dbb`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         // body: JSON.stringify({ wellname: wellname }),
+  //       }
+  //     );
+  //     const data = await response.json();
 
-      if (response.ok) {
-        const foundWell = await data.find((well) => well.name === wellname);
-        if (foundWell) {
-          const lastSix = await lastSixDigits(foundWell);
-          setUnitid(lastSix);
-          setTimeout(() => {
-            setIsWellNameIndicatorShown(false);
-            setWellNameModalVisible(false);
-            setShowNotification(true);
-          }, 2000);
-          console.log(
-            `device ID ${foundWell.unitid}, device name: ${foundWell.name}`
-          );
-          // await otpInputRef.current.setValue(`${lastSix}`);
-          // setPin(lastSix);
-          // Show success toast and handle the well ID
-          // setTimeout(() => {
-          //   Toast.show({
-          //     type: "success",
-          //     text1: "Well Name found",
-          //     text2: `Waiting for sending ${wellname}'s PIN notification`,
-          //     visibilityTime: 6000,
-          //   });
-          // }, 2000);
-          // setTimeout(() => {
-          //   Toast.show({
-          //     type: "success",
-          //     text1: "Well Name PIN",
-          //     text2: `The WellName PIN is: ${lastSix}`,
-          //     visibilityTime: 7000,
-          //   });
-          // }, 9000);
-        } else {
-          // If well name does not exist, show an error message
-          setIsWellNameIndicatorShown(false);
-          Keyboard.dismiss();
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: "Well name does not exist",
-            visibilityTime: 3000,
-          });
-        }
-      } else {
-        // Handle server errors
-        setIsWellNameIndicatorShown(false);
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Server error, please try again later",
-          visibilityTime: 3000,
-        });
-      }
-    } catch (error) {
-      // Handle network errors
-      setIsWellNameIndicatorShown(false);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Network error, please try again",
-        visibilityTime: 3000,
-      });
-    }
-  };
+  //     if (response.ok) {
+  //       const foundWell = await data.find((well) => well.name === wellname);
+  //       if (foundWell) {
+  //         const lastSix = await lastSixDigits(foundWell);
+  //         setUnitid(lastSix);
+  //         setTimeout(() => {
+  //           setIsWellNameIndicatorShown(false);
+  //           setWellNameModalVisible(false);
+  //           setShowNotification(true);
+  //         }, 2000);
+  //         console.log(
+  //           `device ID ${foundWell.unitid}, device name: ${foundWell.name}`
+  //         );
+  //         // await otpInputRef.current.setValue(`${lastSix}`);
+  //         // setPin(lastSix);
+  //         // Show success toast and handle the well ID
+  //         // setTimeout(() => {
+  //         //   Toast.show({
+  //         //     type: "success",
+  //         //     text1: "Well Name found",
+  //         //     text2: `Waiting for sending ${wellname}'s PIN notification`,
+  //         //     visibilityTime: 6000,
+  //         //   });
+  //         // }, 2000);
+  //         // setTimeout(() => {
+  //         //   Toast.show({
+  //         //     type: "success",
+  //         //     text1: "Well Name PIN",
+  //         //     text2: `The WellName PIN is: ${lastSix}`,
+  //         //     visibilityTime: 7000,
+  //         //   });
+  //         // }, 9000);
+  //       } else {
+  //         // If well name does not exist, show an error message
+  //         setIsWellNameIndicatorShown(false);
+  //         Keyboard.dismiss();
+  //         Toast.show({
+  //           type: "error",
+  //           text1: "Error",
+  //           text2: "Well name does not exist",
+  //           visibilityTime: 3000,
+  //         });
+  //       }
+  //     } else {
+  //       // Handle server errors
+  //       setIsWellNameIndicatorShown(false);
+  //       Toast.show({
+  //         type: "error",
+  //         text1: "Error",
+  //         text2: "Server error, please try again later",
+  //         visibilityTime: 3000,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     // Handle network errors
+  //     setIsWellNameIndicatorShown(false);
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Error",
+  //       text2: "Network error, please try again",
+  //       visibilityTime: 3000,
+  //     });
+  //   }
+  // };
 
-  const disconnectDevice = async () => {
-    try {
-      if (selectedDevice) {
-        await selectedDevice.cancelConnection();
-        console.log("Disconnected successfully");
-        setSelectedDevice("");
-        setLoginModalVisible(false);
-      } else {
-        console.log("No device connected");
-        setLoginModalVisible(false);
-      }
-    } catch (error) {
-      console.error("Error disconnecting:", error);
-    }
-  };
+  // const disconnectDevice = async () => {
+  //   try {
+  //     if (selectedDevice) {
+  //       await selectedDevice.cancelConnection();
+  //       console.log("Disconnected successfully");
+  //       setSelectedDevice("");
+  //       setLoginModalVisible(false);
+  //     } else {
+  //       console.log("No device connected");
+  //       setLoginModalVisible(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error disconnecting:", error);
+  //   }
+  // };
 
   // function allow user to connect to device
   const connectToDevice = async (selectedDevice) => {
@@ -347,7 +354,7 @@ export default function Home({ navigation, route }) {
 
   const renderItem = ({ item }) => (
     <Item
-      name={item.name}
+      name={deviceNameMap[item.id] || item.name}
       id={item.id}
       // onPress={() => {
       //   setLoginModalVisible(true); // If not logged in, show the login modal
@@ -397,7 +404,7 @@ export default function Home({ navigation, route }) {
         ListEmptyComponent={handleEmpty}
         scrollEnabled={true}
       />
-      <Login_modal
+      {/* <Login_modal
         loginModalVisible={loginModalVisible}
         setLoginModalVisible={setLoginModalVisible}
         disconnectDevice={disconnectDevice}
@@ -420,7 +427,7 @@ export default function Home({ navigation, route }) {
           message={unitid}
           onDismiss={() => setShowNotification(false)} // Hide the notification when dismissed
         />
-      )}
+      )} */}
     </View>
   );
 }

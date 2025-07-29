@@ -4,12 +4,10 @@ import {
   TextInput,
   FlatList,
   Text,
-  TouchableOpacity,
   useWindowDimensions,
   Image,
   Alert,
   Keyboard,
-  TouchableWithoutFeedback,
 } from "react-native";
 import Moment from "moment";
 import { Buffer } from "buffer";
@@ -26,7 +24,7 @@ import ButtonUI from "../ButtonUI";
 
 const TestTab = ({ navigation, route }) => {
   const { connectedDevice } = route.params;
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
   const [pin, setPin] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   // state for the writing message, default empty
@@ -45,36 +43,40 @@ const TestTab = ({ navigation, route }) => {
 
   const flatListRef = useRef();
 
-  const onMessageChanged = (e) => {
-    setMessage(e);
+  const onMessageChanged = (text) => setMessage(text);
+
+  // function used to get the data and type of this data as parameters
+  const addObject = (data, type) => {
+    const newObj = { date: Date.now(), data, type };
+    setDataArray((prevArray) => [...prevArray, newObj]);
   };
 
   // function for sending data only for testing mode
   const sendData = async (device, data) => {
     try {
-      // when this function is called when the message is submitted, set loading true to show loading modal and display success alert
       setLoading(true);
       setTitle("Sending...");
       setDataReceived(false);
+      const buffer = Buffer.from(data, "utf-8");
+      await device?.writeCharacteristicWithResponseForService(
+        UART_SERVICE_UUID,
+        UART_TX_CHARACTERISTIC_UUID,
+        buffer.toString("base64")
+      );
       Toast.show({
         type: "success",
         text1: "Success",
         text2: "Sent successfully",
         visibilityTime: 3000,
       });
-      // create a new Buffer instance from the data variable, interpreting it as a UTF-8 encoded string
-      // data should be a string or an array of bytes, and Buffer.from encodes it into a binary format (a Buffer object) using UTF-8 encoding
-      const buffer = Buffer.from(data, "utf-8");
-      // send the data to device with ble-plx write function (writeCharacteristicWithResponseForService)
-      await device?.writeCharacteristicWithResponseForService(
-        UART_SERVICE_UUID,
-        UART_TX_CHARACTERISTIC_UUID,
-        buffer.toString("base64")
-      );
-      // add the data sent on the array list with calling addObject function with data and type parameters
       addObject(data, "TX");
     } catch (error) {
       console.error("Error sending data:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to send data",
+      });
     }
   };
 
@@ -100,10 +102,6 @@ const TestTab = ({ navigation, route }) => {
     }
   };
 
-  useEffect(() => {
-    setModalVisible(true);
-  }, []);
-
   const handleSubmitPIN = () => {
     if (pin === "7707") {
       setIsAuthenticated(true);
@@ -114,59 +112,48 @@ const TestTab = ({ navigation, route }) => {
     }
   };
 
-  // Initial load
+  // function for receiving data only for testing mode
+  const receiveData = useCallback(() => {
+    if (!isSubscribed && connectedDevice) {
+      setIsSubscribed(true);
+      Receive.TestReceivedData(connectedDevice, {
+        setDataArray,
+        setLoading,
+        setDataReceived,
+      }).then((subscription) => {
+        return () => subscription?.remove?.();
+      });
+    }
+  }, [isSubscribed, connectedDevice]);
+
+  useEffect(() => {
+    if (!isSubscribed && connectedDevice) {
+      receiveData();
+    }
+  }, [isSubscribed, connectedDevice, receiveData]);
+
   useEffect(() => {
     if (loading && !dataReceived) {
-      // if loading is false and dataReceived is false too
       const timer = setTimeout(() => {
         if (!dataReceived) {
-          // if data no received show warning alert
           Toast.show({
             type: "error",
             text1: "Warning",
             text2: "No data received",
             visibilityTime: 3000,
           });
-          setLoading(false); // set loading to false
+          setLoading(false);
         }
-      }, 7000); // set timeout to 7 seconds to wait if data received or not
-      return () => clearTimeout(timer); // clear timeout
+      }, 7000);
+      return () => clearTimeout(timer);
     }
-    if (!isSubscribed) {
-      receiveData();
-    }
-  }, [loading, dataReceived, isSubscribed, connectedDevice, receiveData]);
-
-  // function used to get the data and type of this data as parameters
-  const addObject = (data, type) => {
-    // create new object with the passed data and type
-    const newObj = { date: Date.now(), data: data, type: type };
-    // set to dataArray state the created object
-    setDataArray((prevArray) => [...prevArray, newObj]);
-  };
-
-  // function for receiving data only for testing mode
-  const receiveData = useCallback(() => {
-    if (!isSubscribed) {
-      setIsSubscribed(true);
-      // call TestReceivedData function
-      Receive.TestReceivedData(connectedDevice, {
-        setDataArray,
-        setLoading,
-        setDataReceived,
-      });
-    }
-  }, [isSubscribed]);
+  }, [loading, dataReceived]);
 
   const onContentSizeChange = () => {
     if (flatListRef.current) {
       flatListRef.current.scrollToEnd({ animated: true });
     }
   };
-
-  // useEffect(() => {
-  //   flatListRef.current?.scrollToEnd({ animated: true });
-  // }, [dataArray]);
 
   const renderItem = ({ item }) => (
     <View style={styles.msgViewContainer}>

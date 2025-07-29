@@ -481,9 +481,10 @@ export class Receive {
           // }
         }
       );
+      return subscription;
     } catch (error) {
-      console.log("No receiving data from device");
-      return false;
+      console.log("No receiving data from device", error);
+      return null;
     }
   }
 
