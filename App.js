@@ -19,6 +19,7 @@ import TimerTab from "./components/tabs/TimerTab";
 import SettingsTab from "./components/tabs/SettingsTab";
 import StatisticsTab from "./components/tabs/StatisticsTab";
 import TestTab from "./components/tabs/TestTab";
+import TriggerTab from "./components/tabs/TriggerTab";
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
@@ -82,6 +83,7 @@ export default function App() {
         <Stack.Screen name="Timers" component={TimerTab} />
         <Stack.Screen name="Settings" component={SettingsTab} />
         <Stack.Screen name="Statistics" component={StatisticsTab} />
+        <Stack.Screen name="Trigger" component={TriggerTab} />
         <Stack.Screen name="Test" component={TestTab} />
       </Stack.Navigator>
       <Toast />

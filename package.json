@@ -41,7 +41,8 @@
     "react-native-toggle-element": "^2.0.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-virtualized-view": "^1.0.0",
-    "expo-file-system": "~18.1.11"
+    "expo-file-system": "~18.1.11",
+    "expo-updates": "~0.28.17"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

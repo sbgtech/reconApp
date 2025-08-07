@@ -48,10 +48,11 @@ const StatisticsTab = ({ route }) => {
     initialStatisticsState
   );
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   // send "reset" to device to reset arrivals values
   const handleResetArrivals = async () => {
     try {
-      fetchDataStatistic();
       const buffer = Buffer.from("RST1 \n", "utf-8");
       await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
@@ -64,6 +65,9 @@ const StatisticsTab = ({ route }) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
+      setLoading(true);
+      await delay(2000);
+      await fetchDataStatistic();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -75,7 +79,6 @@ const StatisticsTab = ({ route }) => {
   // send "reset" to device to reset missrun values
   const handleResetMissrun = async () => {
     try {
-      fetchDataStatistic();
       const buffer = Buffer.from("RST2 \n", "utf-8");
       await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
@@ -88,6 +91,9 @@ const StatisticsTab = ({ route }) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
+      setLoading(true);
+      await delay(2000);
+      await fetchDataStatistic();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -99,7 +105,6 @@ const StatisticsTab = ({ route }) => {
   // send "reset" to device to reset onTime values
   const handleResetOnTime = async () => {
     try {
-      fetchDataStatistic();
       const buffer = Buffer.from("RST3 \n", "utf-8");
       await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
@@ -112,6 +117,9 @@ const StatisticsTab = ({ route }) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
+      setLoading(true);
+      await delay(2000);
+      await fetchDataStatistic();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -123,7 +131,6 @@ const StatisticsTab = ({ route }) => {
   // function called in useEffect when load component to fetch data
   const fetchDataStatistic = async () => {
     try {
-      await Receive.sendReqToGetData(connectedDevice, 3);
       dispatchStatistics(initialStatisticsState);
       const dataPromise = Receive.StatisticsReceivedData(
         connectedDevice,
@@ -131,10 +138,11 @@ const StatisticsTab = ({ route }) => {
         setLoading,
         setTitle
       );
+      await Receive.sendReqToGetData(connectedDevice, 4);
       // start receiving data
       await dataPromise;
     } catch (error) {
-      console.error("Error during fetching data:", error);
+      console.error("Error during fetching statistic data:", error);
     }
   };
 
@@ -159,7 +167,7 @@ const StatisticsTab = ({ route }) => {
     <ScrollView>
       <RefreshBtn onPress={() => fetchDataStatistic()} />
       <View style={[styles.statisticWrapper, styles.marginBottomContainer]}>
-        <Text style={styles.valveTitle}>Arrival statistics</Text>
+        <Text style={styles.valveTitle(width)}>Arrival statistics</Text>
         <View style={styles.statisticSectionContainer(width)}>
           <View style={[styles.rangeWrapper, styles.statisticSection(width)]}>
             <Text style={styles.titleSettings(width)}>Arrivals today :</Text>

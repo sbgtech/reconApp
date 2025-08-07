@@ -25,7 +25,6 @@ import Toast from "react-native-toast-message";
 
 const SettingsTab = ({ route }) => {
   // declare initial states
-  const { height } = Dimensions.get("window");
   const { width } = useWindowDimensions();
   const { connectedDevice } = route.params;
   const cardMinWidth =
@@ -807,6 +806,8 @@ const SettingsTab = ({ route }) => {
     }
   };
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   // send array of prod method, missrun max, false arrivals and well depth values to device with their addresses
   const handleSendFirstBloc = async () => {
     if (settings.missrunMax === "" || settings.wellDepth === "") {
@@ -819,7 +820,6 @@ const SettingsTab = ({ route }) => {
       return; // Exit the function if validation fails
     }
     try {
-      fetchDataSettings();
       const arr = JSON.stringify([
         3,
         111,
@@ -843,6 +843,9 @@ const SettingsTab = ({ route }) => {
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
+      setLoading(true);
+      await delay(2000);
+      await fetchDataSettings();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -874,7 +877,6 @@ const SettingsTab = ({ route }) => {
       });
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           122,
@@ -898,6 +900,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -927,7 +932,6 @@ const SettingsTab = ({ route }) => {
       return; // Exit the function if validation fails
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           133,
@@ -959,6 +963,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -980,7 +987,6 @@ const SettingsTab = ({ route }) => {
       return; // Exit the function if validation fails
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           141,
@@ -1002,6 +1008,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1036,7 +1045,6 @@ const SettingsTab = ({ route }) => {
       });
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           159,
@@ -1058,6 +1066,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1098,7 +1109,6 @@ const SettingsTab = ({ route }) => {
       });
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           100,
@@ -1124,6 +1134,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1164,7 +1177,6 @@ const SettingsTab = ({ route }) => {
       });
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           103,
@@ -1190,6 +1202,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1230,7 +1245,6 @@ const SettingsTab = ({ route }) => {
       });
     } else {
       try {
-        fetchDataSettings();
         const arr = JSON.stringify([
           3,
           106,
@@ -1256,6 +1270,9 @@ const SettingsTab = ({ route }) => {
           text2: "Data sent successfully",
           visibilityTime: 3000,
         });
+        setLoading(true);
+        await delay(2000);
+        await fetchDataSettings();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -1268,7 +1285,6 @@ const SettingsTab = ({ route }) => {
   // function called in useEffect when load component to fetch data
   const fetchDataSettings = async () => {
     try {
-      await Receive.sendReqToGetData(connectedDevice, 2);
       dispatchSettings(initialSettingsState);
       const dataPromise = Receive.SettingsReceivedData(
         connectedDevice,
@@ -1276,10 +1292,11 @@ const SettingsTab = ({ route }) => {
         setLoading,
         setTitle
       );
+      await Receive.sendReqToGetData(connectedDevice, 3);
       // start receiving data
       await dataPromise;
     } catch (error) {
-      console.error("Error during fetching data:", error);
+      console.error("Error during fetching settings data:", error);
     }
   };
 
@@ -1805,6 +1822,7 @@ const SettingsTab = ({ route }) => {
               title={"Valve A"}
               status={settings.valveA === 1 ? true : false}
               valve={"A"}
+              setLoading={setLoading}
             />
           </View>
           <View
@@ -1818,12 +1836,13 @@ const SettingsTab = ({ route }) => {
               title={"Valve B"}
               status={settings.valveB === 1 ? true : false}
               valve={"B"}
+              setLoading={setLoading}
             />
           </View>
         </View>
 
         <View style={[styles.settingsWrapper, styles.marginBottomContainer]}>
-          <Text style={styles.valveTitle}>Controller configuration</Text>
+          <Text style={styles.valveTitle(width)}>Controller configuration</Text>
           <View style={styles.settingsSectionContainer(width)}>
             <View style={styless.masonryContainer}>{renderColumns()}</View>
           </View>

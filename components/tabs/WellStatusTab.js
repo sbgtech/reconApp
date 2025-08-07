@@ -59,7 +59,6 @@ const WellStatus = ({ route }) => {
 
   const fetchDataWellStatus = async () => {
     try {
-      await Receive.sendReqToGetData(connectedDevice, 0);
       dispatchWellStatus(initialWellStatusState);
       const dataPromise = Receive.WellStatusReceivedData(
         connectedDevice,
@@ -67,10 +66,11 @@ const WellStatus = ({ route }) => {
         setLoading,
         setTitle
       );
+      await Receive.sendReqToGetData(connectedDevice, 1);
       await dataPromise;
       // Receive and parse data again
     } catch (error) {
-      console.error("Error during fetching data:", error);
+      console.error("Error during fetching well status data:", error);
     }
   };
 
@@ -128,7 +128,11 @@ const WellStatus = ({ route }) => {
           <Table data={tableData} header={tableHeader} />
         </View>
       </View>
-      <Loading loading={loading} title={title} />
+      <Loading
+        loading={loading}
+        title={title}
+        onForceClose={() => setLoading(false)}
+      />
     </ScrollView>
   );
 };

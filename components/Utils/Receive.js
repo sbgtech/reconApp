@@ -105,13 +105,14 @@ export class Receive {
       timeout = setTimeout(() => {
         if (!page1Received || !page5Received) {
           cleanup();
+          console.log("Data not received within 7 seconds (well status)");
           Toast.show({
             type: "error",
             text1: "Warning",
             text2: "No received data",
             visibilityTime: 3000,
           });
-          reject("Timeout: Incomplete data received");
+          reject("Timeout: No well status data received");
         }
       }, 7000);
 
@@ -170,13 +171,13 @@ export class Receive {
               }
             }
           } catch (err) {
-            console.log("Error parsing data:", err);
+            console.log("Error parsing well status data:", err);
             // Wait for other packets; don't reject yet
           }
         }
       );
     }).catch((err) => {
-      console.log("Receive failed:", err);
+      console.log("Error receiving well status data:", err);
       return false;
     });
   }
@@ -425,7 +426,7 @@ export class Receive {
             if (
               firstIndexValue == "[" &&
               lastIndexValue == "]" &&
-              Number(pageIndex) == 4
+              pageIndex === 4
             ) {
               const msg = JSON.parse(str);
               dispatchStatistics({
@@ -450,8 +451,113 @@ export class Receive {
           }
         }
       );
-    }).catch(() => {
+    }).catch((err) => {
       console.log("Error receiving statistic data:", err);
+      return false;
+    });
+  }
+
+  // function listen to receive data for trigger page
+  static async TriggerReceivedData(
+    device,
+    dispatchTrigger,
+    setLoading,
+    setTitle
+  ) {
+    new Promise((resolve, reject) => {
+      setLoading(true);
+      setTitle("Loading...");
+      let timeout;
+      let subscription;
+      let dataReceived = false;
+      const cleanup = () => {
+        clearTimeout(timeout);
+        if (subscription && typeof subscription.remove === "function") {
+          subscription.remove();
+        }
+        setTimeout(() => setLoading(false), 400);
+      };
+      timeout = setTimeout(() => {
+        if (!dataReceived) {
+          cleanup();
+          console.log("Data not received within 7 seconds (Trigger)");
+          Toast.show({
+            type: "error",
+            text1: "Warning",
+            text2: "No received data",
+            visibilityTime: 3000,
+          });
+          reject("Timeout: No trigger data received");
+        }
+      }, 7000);
+
+      subscription = device?.monitorCharacteristicForService(
+        UART_SERVICE_UUID,
+        UART_RX_CHARACTERISTIC_UUID,
+        (error, characteristic) => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
+          try {
+            const str = Buffer.from(characteristic.value, "base64").toString(
+              "utf-8"
+            );
+            const firstIndexValue = str.charAt(0);
+            const pageIndex = Number(str.charAt(1));
+            const lastIndexValue = str[str.length - 2];
+
+            if (
+              firstIndexValue === "[" &&
+              lastIndexValue === "]" &&
+              pageIndex === 6
+            ) {
+              const msg = JSON.parse(str);
+              dispatchTrigger({
+                closeDelayTimer: msg[1], //
+                minArrivalTime: msg[2], //
+                maxArrivalTime: msg[3], //
+                openTriggerSelectEnable: msg[4], //
+                openPressureSetpoint: msg[5], //
+                openTimerSetpoint: msg[6], //
+                openBackupTimerEnable: msg[7], //
+                openBackupTimerMin: msg[8], //
+                openBackupTimerMax: msg[9], //
+                openAutoAdjustEnable: msg[10], //
+                openAutoAdjustPSIMin: msg[11], //
+                openAutoAdjustPSIMax: msg[12], //
+                openAutoAdjustPSIIncrement: msg[13], //
+                openAutoAdjustTimerMin: msg[14], //
+                openAutoAdjustTimerMax: msg[15], //
+                openAutoAdjustTimerIncrement: msg[16], //
+                closeTriggerSelectEnable: msg[17], //
+                closePressureSetpoint: msg[18], //
+                closeTimerSetpoint: msg[19], //
+                closeBackupTimerEnable: msg[20], //
+                closeBackupTimerMin: msg[21], //
+                closeBackupTimerMax: msg[22], //
+                closeAutoAdjustEnable: msg[23], //
+                closeAutoAdjustPSIMin: msg[24], //
+                closeAutoAdjustPSIMax: msg[25], //
+                closeAutoAdjustPSIIncrement: msg[26], //
+                closeAutoAdjustTimerMin: msg[27], //
+                closeAutoAdjustTimerMax: msg[28], //
+                closeAutoAdjustTimerIncrement: msg[29], //
+              });
+              dataReceived = true;
+              cleanup();
+              resolve(true);
+              if (subscription?.remove) subscription.remove();
+            }
+          } catch (err) {
+            console.log("Error parsing trigger data:", err);
+            // We continue listening in case of parse issues
+          }
+        }
+      );
+    }).catch((err) => {
+      console.log("Error receiving trigger data:", err);
       return false;
     });
   }
@@ -516,7 +622,7 @@ export class Receive {
   // function for sending data to device (called it into each page)
   static async sendReqToGetData(connectedDevice, activeTab) {
     try {
-      const data = "0x0" + (activeTab + 1) + " \n";
+      const data = "0x0" + activeTab + " \n";
       const buffer = Buffer.from(data, "utf-8");
       await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,

@@ -6,7 +6,6 @@ import { Receive } from "../Utils/Receive";
 import RefreshBtn from "./blocs/RefreshBtn";
 import Loading from "./blocs/Loading";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useCallback } from "react";
 
 const TimerTab = ({ route }) => {
   const { width } = useWindowDimensions();
@@ -36,7 +35,6 @@ const TimerTab = ({ route }) => {
   // Fetch timer data
   const fetchDataTimer = async () => {
     try {
-      await Receive.sendReqToGetData(connectedDevice, 1);
       dispatchTimers(initialTimersState);
       const dataPromise = Receive.TimerReceivedData(
         connectedDevice,
@@ -44,10 +42,11 @@ const TimerTab = ({ route }) => {
         setLoading,
         setTitle
       );
+      await Receive.sendReqToGetData(connectedDevice, 2);
       // Receive and parse data again
       await dataPromise;
     } catch (error) {
-      console.error("Error during fetching data:", error);
+      console.error("Error during fetching timer data:", error);
     }
   };
 
@@ -67,7 +66,7 @@ const TimerTab = ({ route }) => {
 
   return (
     <KeyboardAwareScrollView
-      extraScrollHeight={135} // You may need to tweak this
+      extraScrollHeight={120} // You may need to tweak this
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       enableResetScrollToCoords={false}
@@ -78,7 +77,9 @@ const TimerTab = ({ route }) => {
     >
       <View>
         <RefreshBtn onPress={() => fetchDataTimer()} />
-        <View style={styles.timersContainer(width)}>
+        <View
+          style={[styles.timersContainer(width), styles.marginBottomContainer]}
+        >
           <Timer
             connectedDevice={connectedDevice}
             title={"Open timer"}
@@ -87,6 +88,7 @@ const TimerTab = ({ route }) => {
             totalSec={timers.receivedOpenTimer}
             setTitle={setTitle}
             fetchDataTimer={fetchDataTimer}
+            setLoading={setLoading}
           />
           <Timer
             connectedDevice={connectedDevice}
@@ -96,6 +98,7 @@ const TimerTab = ({ route }) => {
             totalSec={timers.receivedShutinTimer}
             setTitle={setTitle}
             fetchDataTimer={fetchDataTimer}
+            setLoading={setLoading}
           />
           <Timer
             connectedDevice={connectedDevice}
@@ -105,6 +108,7 @@ const TimerTab = ({ route }) => {
             totalSec={timers.receivedAfterflowTimer}
             setTitle={setTitle}
             fetchDataTimer={fetchDataTimer}
+            setLoading={setLoading}
           />
           <Timer
             connectedDevice={connectedDevice}
@@ -114,6 +118,7 @@ const TimerTab = ({ route }) => {
             totalSec={timers.receivedMandatoryTimer}
             setTitle={setTitle}
             fetchDataTimer={fetchDataTimer}
+            setLoading={setLoading}
           />
         </View>
       </View>

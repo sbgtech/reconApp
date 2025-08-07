@@ -15,9 +15,12 @@ const Valve = ({
   status,
   fetchDataSettings,
   valve,
+  setLoading,
 }) => {
   const { width } = useWindowDimensions();
   const [isEnabledValve, setIsEnabledValve] = useState(status);
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   // sent data of valve A
   const handleSendValveValue = async (value) => {
@@ -42,6 +45,8 @@ const Valve = ({
         visibilityTime: 3000,
       });
       setIsEnabledValve(value);
+      setLoading(true);
+      await delay(2000);
       await fetchDataSettings();
     } catch (error) {
       console.log(
@@ -77,7 +82,7 @@ const Valve = ({
   return (
     <View style={styles.valveWrapper}>
       <View style={styles.onOffStatus(width)}>
-        <Text style={styles.valveTitle}>{title}</Text>
+        <Text style={styles.valveTitle(width)}>{title}</Text>
         <Switch
           value={isEnabledValve}
           onValueChange={handleSwitchChange}

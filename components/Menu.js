@@ -10,7 +10,7 @@ import {
   TextInput,
   BackHandler, // Import BackHandler for Android hardware back button
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation
+import { useFocusEffect, useNavigation } from "@react-navigation/native"; // Import useNavigation
 import MenuItem from "./MenuItem";
 import { styles } from "./tabs/style/styles";
 import { BleManager } from "react-native-ble-plx";
@@ -59,7 +59,7 @@ const Menu = () => {
     },
     {
       iconName: "radio-button-on",
-      tabName: "Triggers",
+      tabName: "Trigger",
     },
     {
       iconName: "hammer-outline",
@@ -91,7 +91,7 @@ const Menu = () => {
         navigation.navigate("Statistics", { connectedDevice: connectedDevice });
         break;
       case 4:
-        navigation.navigate("Triggers", { connectedDevice: connectedDevice });
+        navigation.navigate("Trigger", { connectedDevice: connectedDevice });
         break;
       case 5:
         navigation.navigate("Test", { connectedDevice: connectedDevice });
@@ -219,22 +219,22 @@ const Menu = () => {
           }
         );
       } else {
-        Alert.alert(
-          "Device Not Connected",
-          "No device is currently connected. Please connect to a device.",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "Home", params: { scanning: false } }],
-                });
-              },
-            },
-          ],
-          { cancelable: false }
-        );
+        // Alert.alert(
+        //   "Device Not Connected",
+        //   "No device is currently connected. Please connect to a device.",
+        //   [
+        //     {
+        //       text: "OK",
+        //       onPress: () => {
+        //         navigation.reset({
+        //           index: 0,
+        //           routes: [{ name: "Home", params: { scanning: false } }],
+        //         });
+        //       },
+        //     },
+        //   ],
+        //   { cancelable: false }
+        // );
       }
     };
     checkDeviceConnection();
@@ -248,33 +248,37 @@ const Menu = () => {
   }, [navigation]); // Depend on navigation to ensure reset works correctly
 
   // Handle Android hardware back button
-  useEffect(() => {
-    const backAction = () => {
-      if (connectedDevice) {
-        Alert.alert(
-          "Disconnect Device?",
-          "Are you sure you want to disconnect from the device and exit?",
-          [
-            {
-              text: "Cancel",
-              onPress: () => null,
-              style: "cancel",
-            },
-            { text: "YES", onPress: handleDisconnect },
-          ]
-        );
-        return true; // Prevent default back action
-      }
-      return false; // Allow default back action if no device is connected
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        if (connectedDevice) {
+          Alert.alert(
+            "Disconnect Device?",
+            "Are you sure you want to disconnect from the device and exit?",
+            [
+              {
+                text: "Cancel",
+                onPress: () => null,
+                style: "cancel",
+              },
+              { text: "YES", onPress: handleDisconnect },
+            ]
+          );
+          return true;
+        }
+        return false;
+      };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
 
-    return () => backHandler.remove();
-  }, [connectedDevice, handleDisconnect]);
+      return () => {
+        backHandler.remove();
+      };
+    }, [connectedDevice, handleDisconnect])
+  );
 
   // Add a header button for disconnection
   useEffect(() => {

@@ -17,6 +17,7 @@ const Timer = ({
   address1,
   address2,
   fetchDataTimer,
+  setLoading,
 }) => {
   const { width } = useWindowDimensions();
   const [hourValue, setHourValue] = useState("");
@@ -74,6 +75,8 @@ const Timer = ({
     return { LSB, MSB };
   };
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const handleSendTimer = async () => {
     if (hourValue === "" || minValue === "" || secValue === "") {
       Toast.show({
@@ -90,7 +93,6 @@ const Timer = ({
       const { LSB, MSB } = unpackFloatToRegister(totalSeconds);
       const arr = JSON.stringify([2, address1, LSB, address2, MSB]);
       const buffer = Buffer.from(arr + "\n", "utf-8");
-      fetchDataTimer();
       await connectedDevice?.writeCharacteristicWithResponseForService(
         UART_SERVICE_UUID,
         UART_TX_CHARACTERISTIC_UUID,
@@ -102,6 +104,9 @@ const Timer = ({
         text2: "Data sent successfully",
         visibilityTime: 3000,
       });
+      setLoading(true);
+      await delay(2000);
+      await fetchDataTimer();
     } catch (error) {
       console.log(
         "Error with writeCharacteristicWithResponseForService :",
@@ -131,7 +136,7 @@ const Timer = ({
           justifyContent: "space-between",
         }}
       >
-        <Text style={styles.valveTitle}>{title}</Text>
+        <Text style={styles.valveTitle(width)}>{title}</Text>
       </View>
 
       <View style={styles.rangeWrapper}>

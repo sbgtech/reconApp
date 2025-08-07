@@ -284,10 +284,10 @@ export const styles = {
     flexDirection: width > 600 ? "row" : "column",
     flexWrap: width > 600 ? "wrap" : "nowrap",
     justifyContent: width > 600 ? "space-between" : "flex-start",
-    gap: width > 600 ? 30 : 20,
+    gap: width > 600 ? 30 : 10,
     marginHorizontal: 14,
-    marginTop: width > 600 ? 25 : 15,
-    marginBottom: width > 600 ? 50 : 50,
+    marginTop: width > 600 ? 25 : 10,
+    marginBottom: width > 600 ? 50 : 10,
   }),
   // TimerTab.js
   timerIntermitContainer: {
@@ -328,12 +328,12 @@ export const styles = {
   }),
 
   // Timer.js - statisticsTab.js - Valve.js
-  valveTitle: {
+  valveTitle: (width) => ({
     fontWeight: "bold",
     fontStyle: "italic",
-    marginBottom: 10,
+    marginBottom: 8,
     fontSize: width < 600 ? 18 : width < 800 ? 18 : width < 950 ? 24 : 30,
-  },
+  }),
 
   // Timer.js- statisticsTab.js - SettingsTab.js
   rangeWrapper: {
@@ -391,6 +391,31 @@ export const styles = {
     fontSize: width < 600 ? 14 : width < 800 ? 14 : width < 950 ? 20 : 22,
     padding: 2,
   }),
+  /* ------------------------------------------- */
+  // TriggerTimer.js
+  triggerTimerWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  // TriggerTimer.js
+  inputTriggerTimer: (width) => ({
+    backgroundColor: "#fff",
+    marginVertical: 2,
+    textAlign: "center",
+    borderWidth: 0.5,
+    color: "#000",
+    fontSize: width < 600 ? 15 : width < 800 ? 14 : width < 950 ? 18 : 20,
+    width: width < 600 ? 75 : width < 800 ? 76 : width < 950 ? 70 : 75,
+    maxWidth: 90,
+    height: width < 600 ? 38 : width < 800 ? 36 : width < 950 ? 44 : 44,
+    maxHeight: 90,
+  }),
+  // TriggerTimer.js
+  dotTriggerTimer: {
+    fontSize: width < 600 ? 20 : width < 800 ? 16 : width < 950 ? 20 : 20,
+    fontWeight: width < 600 ? "normal" : "bold",
+  },
   /* ------------------------------------------- */
   // SettingsTab.js
   settingsWrapper: {
