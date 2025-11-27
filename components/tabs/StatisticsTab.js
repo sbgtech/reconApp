@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   ScrollView,
   View,
@@ -48,8 +48,6 @@ const StatisticsTab = ({ route }) => {
     initialStatisticsState
   );
 
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
   // send "reset" to device to reset arrivals values
   const handleResetArrivals = async () => {
     try {
@@ -66,7 +64,7 @@ const StatisticsTab = ({ route }) => {
         visibilityTime: 3000,
       });
       setLoading(true);
-      await delay(2000);
+      await Receive.delay(2000);
       await fetchDataStatistic();
     } catch (error) {
       console.log(
@@ -92,7 +90,7 @@ const StatisticsTab = ({ route }) => {
         visibilityTime: 3000,
       });
       setLoading(true);
-      await delay(2000);
+      await Receive.delay(2000);
       await fetchDataStatistic();
     } catch (error) {
       console.log(
@@ -118,7 +116,7 @@ const StatisticsTab = ({ route }) => {
         visibilityTime: 3000,
       });
       setLoading(true);
-      await delay(2000);
+      await Receive.delay(2000);
       await fetchDataStatistic();
     } catch (error) {
       console.log(

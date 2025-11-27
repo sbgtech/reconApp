@@ -2,7 +2,7 @@
   "expo": {
     "name": "RECON Mobile",
     "slug": "MyBleApp",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "platforms": ["ios", "android"],
     "orientation": "default",
     "icon": "./assets/logo.png",
@@ -32,7 +32,7 @@
         "android.permission.BLUETOOTH_CONNECT",
         "NOTIFICATIONS"
       ],
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -42,11 +42,6 @@
       "eas": {
         "projectId": "b2ecd618-d615-4481-bc37-42915267f220"
       }
-    },
-    "updates": {
-      "enabled": true,
-      "fallbackToCacheTimeout": 0
-    },
-    "runtimeVersion": "1.5.0"
+    }
   }
 }

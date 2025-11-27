@@ -37,7 +37,7 @@ const Menu = () => {
   const [customDeviceName, setCustomDeviceNameState] = useState("");
   const [renameModalVisible, setRenameModalVisible] = useState(false);
   const [customName, setCustomName] = useState("");
-  const currentVersion = "PROD 10-28JULY2025@2:00.PM";
+  const currentVersion = "PROD 11-28AUG2025@10:00.AM";
   const disconnectMonitorSubscription = useRef(null);
 
   const menu = [
@@ -60,6 +60,14 @@ const Menu = () => {
     {
       iconName: "radio-button-on",
       tabName: "Trigger",
+    },
+    {
+      iconName: "options-outline",
+      tabName: "PID",
+    },
+    {
+      iconName: "notifications-outline",
+      tabName: "Alarm",
     },
     {
       iconName: "hammer-outline",
@@ -94,6 +102,12 @@ const Menu = () => {
         navigation.navigate("Trigger", { connectedDevice: connectedDevice });
         break;
       case 5:
+        navigation.navigate("PID", { connectedDevice: connectedDevice });
+        break;
+      case 6:
+        navigation.navigate("Alarm", { connectedDevice: connectedDevice });
+        break;
+      case 7:
         navigation.navigate("Test", { connectedDevice: connectedDevice });
         break;
       default:

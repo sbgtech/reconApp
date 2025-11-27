@@ -8,6 +8,7 @@ import {
   UART_TX_CHARACTERISTIC_UUID,
 } from "../../Utils/Constants";
 import Toast from "react-native-toast-message";
+import { Receive } from "../../Utils/Receive";
 
 const Valve = ({
   connectedDevice,
@@ -19,8 +20,6 @@ const Valve = ({
 }) => {
   const { width } = useWindowDimensions();
   const [isEnabledValve, setIsEnabledValve] = useState(status);
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   // sent data of valve A
   const handleSendValveValue = async (value) => {
@@ -46,7 +45,7 @@ const Valve = ({
       });
       setIsEnabledValve(value);
       setLoading(true);
-      await delay(2000);
+      await Receive.delay(2000);
       await fetchDataSettings();
     } catch (error) {
       console.log(

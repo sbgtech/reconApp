@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Text, View, TextInput, useWindowDimensions } from "react-native";
 import Toast from "react-native-toast-message";
-import { styles } from "../style/styles";
-import { Receive } from "../../Utils/Receive";
+import { Receive } from "../../../Utils/Receive";
+import { styles } from "../../style/styles";
 
 const TriggerTimer = ({
   hourValue,

@@ -60,23 +60,6 @@ const Timer = ({
     }
   };
 
-  const unpackFloatToRegister = (floatValue) => {
-    // Convert the float to a 32-bit integer (using Float32Array and DataView)
-    let buffer = new ArrayBuffer(4);
-    let view = new DataView(buffer);
-    view.setFloat32(0, floatValue, true);
-
-    // Get the 32-bit integer from the buffer
-    let register32bit = view.getUint32(0, true);
-
-    let MSB = (register32bit >> 16) & 0xffff; // Top 16 bits
-    let LSB = register32bit & 0xffff; // Bottom 16 bits
-
-    return { LSB, MSB };
-  };
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
   const handleSendTimer = async () => {
     if (hourValue === "" || minValue === "" || secValue === "") {
       Toast.show({
@@ -90,7 +73,7 @@ const Timer = ({
     try {
       const totalSeconds =
         Number(hourValue) * 3600 + Number(minValue) * 60 + Number(secValue);
-      const { LSB, MSB } = unpackFloatToRegister(totalSeconds);
+      const { LSB, MSB } = Receive.unpackFloatToRegister(totalSeconds);
       const arr = JSON.stringify([2, address1, LSB, address2, MSB]);
       const buffer = Buffer.from(arr + "\n", "utf-8");
       await connectedDevice?.writeCharacteristicWithResponseForService(
@@ -105,7 +88,7 @@ const Timer = ({
         visibilityTime: 3000,
       });
       setLoading(true);
-      await delay(2000);
+      await Receive.delay(2000);
       await fetchDataTimer();
     } catch (error) {
       console.log(

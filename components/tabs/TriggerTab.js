@@ -22,11 +22,11 @@ import {
   UART_TX_CHARACTERISTIC_UUID,
 } from "../Utils/Constants";
 import Toast from "react-native-toast-message";
-import TriggerCommon from "./blocs/TriggerCommon";
-import TriggerOpenBackup from "./blocs/TriggerOpenBackup";
-import TriggerOpenADJ from "./blocs/TriggerOpenADJ";
-import TriggerCloseBackup from "./blocs/TriggerCloseBackup";
-import TriggerCloseADJ from "./blocs/TriggerCloseADJ";
+import TriggerCommon from "./blocs/Trigger/TriggerCommon";
+import TriggerOpenBackup from "./blocs/Trigger/TriggerOpenBackup";
+import TriggerOpenADJ from "./blocs/Trigger/TriggerOpenADJ";
+import TriggerCloseBackup from "./blocs/Trigger/TriggerCloseBackup";
+import TriggerCloseADJ from "./blocs/Trigger/TriggerCloseADJ";
 
 const TriggerTab = ({ route }) => {
   // declare initial states
@@ -41,29 +41,30 @@ const TriggerTab = ({ route }) => {
   const [title, setTitle] = useState("");
 
   const initialTriggerState = {
+    closeDelayTimer: "",
     minArrivalTime: "",
     maxArrivalTime: "",
-    closeDelayTimer: "",
     openTriggerSelectEnable: null,
     openPressureSetpoint: "",
     openTimerSetpoint: "",
-    openBackupTimerEnable: "",
+    openBackupTimerEnable: null,
     openBackupTimerMin: "",
     openBackupTimerMax: "",
-    openAutoAdjustEnable: "",
+    openAutoAdjustEnable: null,
     openAutoAdjustPSIMin: "",
     openAutoAdjustPSIMax: "",
     openAutoAdjustPSIIncrement: "",
     openAutoAdjustTimerMin: "",
     openAutoAdjustTimerMax: "",
     openAutoAdjustTimerIncrement: "",
-    closeTriggerSelectEnable: "",
+    closeTriggerSelectEnable: null,
+    closeFlowrateTriggerSource: null,
     closePressureSetpoint: "",
     closeTimerSetpoint: "",
-    closeBackupTimerEnable: "",
+    closeBackupTimerEnable: null,
     closeBackupTimerMin: "",
     closeBackupTimerMax: "",
-    closeAutoAdjustEnable: "",
+    closeAutoAdjustEnable: null,
     closeAutoAdjustPSIMin: "",
     closeAutoAdjustPSIMax: "",
     closeAutoAdjustPSIIncrement: "",
@@ -142,7 +143,7 @@ const TriggerTab = ({ route }) => {
 
   // Open Trigger Auto Adjust
   const card3 = (
-    <TriggerOpenADJ
+    <TriggerCloseBackup
       connectedDevice={connectedDevice}
       trigger={trigger}
       dispatchTrigger={dispatchTrigger}
@@ -153,7 +154,7 @@ const TriggerTab = ({ route }) => {
 
   // Close Trigger Backup
   const card4 = (
-    <TriggerCloseBackup
+    <TriggerOpenADJ
       connectedDevice={connectedDevice}
       trigger={trigger}
       dispatchTrigger={dispatchTrigger}
@@ -189,13 +190,13 @@ const TriggerTab = ({ route }) => {
       return (
         <>
           <View style={styless.column}>
-            {card2}
-            {card3}
             {card1}
+            {card3}
+            {card5}
           </View>
           <View style={styless.column}>
+            {card2}
             {card4}
-            {card5}
           </View>
         </>
       );

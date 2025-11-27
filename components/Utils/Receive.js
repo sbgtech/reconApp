@@ -314,7 +314,7 @@ export class Receive {
               pageIndex === 3
             ) {
               const msg = JSON.parse(str);
-
+              console.log(msg);
               dispatchSettings({
                 valveA: msg[1],
                 valveB: msg[35],
@@ -341,20 +341,14 @@ export class Receive {
                 TPSensorMin: msg[21],
                 TPVoltageMax: msg[22] / 10,
                 TPVoltageMin: msg[23] / 10,
-                pidOverrideIndex: msg[24],
-                pidSP: msg[25],
-                pidKP: msg[26],
-                pidKI: msg[27],
-                pidKD: msg[28],
-                pidINIT: msg[29],
-                pidDB: msg[30],
-                pidLL: msg[31],
                 autocatcherIndex: msg[32],
                 autocatcherDelay: msg[33],
                 BValveTwinIndex: msg[34],
                 receivedPressureSourceIndex: msg[36],
                 receivedPressureMaxPSI: msg[37],
                 receivedPressureMinPSI: msg[38],
+                primaryValveSelection: msg[40],
+                hiloValveSelection: msg[41],
               });
               dataReceived = true;
               cleanup();
@@ -544,6 +538,7 @@ export class Receive {
                 closeAutoAdjustTimerMin: msg[27], //
                 closeAutoAdjustTimerMax: msg[28], //
                 closeAutoAdjustTimerIncrement: msg[29], //
+                closeFlowrateTriggerSource: msg[30], //
               });
               dataReceived = true;
               cleanup();
@@ -558,6 +553,176 @@ export class Receive {
       );
     }).catch((err) => {
       console.log("Error receiving trigger data:", err);
+      return false;
+    });
+  }
+
+  // function listen to receive data for PID page
+  static async PIDReceivedData(device, dispatchPID, setLoading, setTitle) {
+    new Promise((resolve, reject) => {
+      setLoading(true);
+      setTitle("Loading...");
+      let timeout;
+      let subscription;
+      let dataReceived = false;
+      const cleanup = () => {
+        clearTimeout(timeout);
+        if (subscription && typeof subscription.remove === "function") {
+          subscription.remove();
+        }
+        setTimeout(() => setLoading(false), 400);
+      };
+      timeout = setTimeout(() => {
+        if (!dataReceived) {
+          cleanup();
+          console.log("Data not received within 7 seconds (PID)");
+          Toast.show({
+            type: "error",
+            text1: "Warning",
+            text2: "No received data",
+            visibilityTime: 3000,
+          });
+          reject("Timeout: No PID data received");
+        }
+      }, 7000);
+
+      subscription = device?.monitorCharacteristicForService(
+        UART_SERVICE_UUID,
+        UART_RX_CHARACTERISTIC_UUID,
+        (error, characteristic) => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
+          try {
+            const str = Buffer.from(characteristic.value, "base64").toString(
+              "utf-8"
+            );
+            const firstIndexValue = str.charAt(0);
+            const pageIndex = Number(str.charAt(1));
+            const lastIndexValue = str[str.length - 2];
+
+            if (
+              firstIndexValue === "[" &&
+              lastIndexValue === "]" &&
+              pageIndex === 7
+            ) {
+              const msg = JSON.parse(str);
+              dispatchPID({
+                pidOneEnableIndex: msg[1], //
+                pidOneModeIndex: msg[2], //
+                pidOneSP: msg[3], //
+                pidOneKP: msg[4], //
+                pidOneKI: msg[5], //
+                pidOneKD: msg[6], //
+                pidOneINIT: msg[7], //
+                pidOneDB: msg[8], //
+                pidOneLL: msg[9], //
+                pidOnePVSource: msg[10], //
+                pidOneLoopDelay: msg[11], //
+                pidTwoEnableIndex: msg[12], //
+                pidTwoModeIndex: msg[13], //
+                pidTwoSP: msg[14], //
+                pidTwoKP: msg[15], //
+                pidTwoKI: msg[16], //
+                pidTwoKD: msg[17], //
+                pidTwoINIT: msg[18], //
+                pidTwoDB: msg[19], //
+                pidTwoLL: msg[20], //
+                pidTwoPVSource: msg[21], //
+                pidTwoLoopDelay: msg[22], //
+              });
+              dataReceived = true;
+              cleanup();
+              resolve(true);
+              if (subscription?.remove) subscription.remove();
+            }
+          } catch (err) {
+            console.log("Error parsing PID data:", err);
+            // We continue listening in case of parse issues
+          }
+        }
+      );
+    }).catch((err) => {
+      console.log("Error receiving PID data:", err);
+      return false;
+    });
+  }
+
+  // function listen to receive data for Alarm page
+  static async AlarmReceivedData(device, dispatchAlarm, setLoading, setTitle) {
+    new Promise((resolve, reject) => {
+      setLoading(true);
+      setTitle("Loading...");
+      let timeout;
+      let subscription;
+      let dataReceived = false;
+      const cleanup = () => {
+        clearTimeout(timeout);
+        if (subscription && typeof subscription.remove === "function") {
+          subscription.remove();
+        }
+        setTimeout(() => setLoading(false), 400);
+      };
+      timeout = setTimeout(() => {
+        if (!dataReceived) {
+          cleanup();
+          console.log("Data not received within 7 seconds (Alarm)");
+          Toast.show({
+            type: "error",
+            text1: "Warning",
+            text2: "No received data",
+            visibilityTime: 3000,
+          });
+          reject("Timeout: No Alarm data received");
+        }
+      }, 7000);
+
+      subscription = device?.monitorCharacteristicForService(
+        UART_SERVICE_UUID,
+        UART_RX_CHARACTERISTIC_UUID,
+        (error, characteristic) => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
+          try {
+            const str = Buffer.from(characteristic.value, "base64").toString(
+              "utf-8"
+            );
+            const firstIndexValue = str.charAt(0);
+            const pageIndex = Number(str.charAt(1));
+            const lastIndexValue = str[str.length - 2];
+
+            if (
+              firstIndexValue === "[" &&
+              lastIndexValue === "]" &&
+              pageIndex === 8
+            ) {
+              const msg = JSON.parse(str);
+              dispatchAlarm({
+                LPAlarmLimitMin: msg[6], //
+                LPAlarmLimitMax: msg[5], //
+                TPAlarmLimitMin: msg[2], //
+                TPAlarmLimitMax: msg[1], //
+                CPAlarmLimitMin: msg[4], //
+                CPAlarmLimitMax: msg[3], //
+              });
+              dataReceived = true;
+              cleanup();
+              resolve(true);
+              if (subscription?.remove) subscription.remove();
+            }
+          } catch (err) {
+            console.log("Error parsing Alarm data:", err);
+            // We continue listening in case of parse issues
+          }
+        }
+      );
+    }).catch((err) => {
+      console.log("Error receiving Alarm data:", err);
       return false;
     });
   }
@@ -654,4 +819,18 @@ export class Receive {
       console.log(error);
     }
   }
+
+  static unpackFloatToRegister = (floatValue) => {
+    // Convert the float to a 32-bit integer (using Float32Array and DataView)
+    let buffer = new ArrayBuffer(4);
+    let view = new DataView(buffer);
+    view.setFloat32(0, floatValue, true);
+    // Get the 32-bit integer from the buffer
+    let register32bit = view.getUint32(0, true);
+    let MSB = (register32bit >> 16) & 0xffff; // Top 16 bits
+    let LSB = register32bit & 0xffff; // Bottom 16 bits
+    return { LSB, MSB };
+  };
+
+  static delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 }
