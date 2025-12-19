@@ -371,7 +371,7 @@ export default function Home({ navigation, route }) {
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyTextHome(width)}>
           {" "}
-          No available devices yet!
+          No available devices yet
         </Text>
       </View>
     );
