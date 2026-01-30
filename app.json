@@ -2,7 +2,7 @@
   "expo": {
     "name": "RECON Mobile",
     "slug": "MyBleApp",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "platforms": ["ios", "android"],
     "orientation": "default",
     "icon": "./assets/logo.png",
@@ -32,7 +32,7 @@
         "android.permission.BLUETOOTH_CONNECT",
         "NOTIFICATIONS"
       ],
-      "versionCode": 6
+      "versionCode": 7
     },
     "web": {
       "favicon": "./assets/favicon.png"
