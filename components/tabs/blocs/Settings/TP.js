@@ -61,9 +61,9 @@ const TP = ({
           Number(settings.TPSensorMax),
           108,
           Number(settings.TPSensorMin),
-          120,
+          118,
           Number(settings.TPVoltageMax * 10),
-          121,
+          119,
           Number(settings.TPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");

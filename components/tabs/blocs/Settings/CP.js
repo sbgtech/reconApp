@@ -61,9 +61,9 @@ const CP = ({
           Number(settings.CPSensorMax),
           105,
           Number(settings.CPSensorMin),
-          118,
+          120,
           Number(settings.CPVoltageMax * 10),
-          119,
+          121,
           Number(settings.CPVoltageMin * 10),
         ]);
         const buffer = Buffer.from(arr + "\n", "utf-8");

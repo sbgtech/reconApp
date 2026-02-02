@@ -37,7 +37,7 @@ const Menu = () => {
   const [customDeviceName, setCustomDeviceNameState] = useState("");
   const [renameModalVisible, setRenameModalVisible] = useState(false);
   const [customName, setCustomName] = useState("");
-  const currentVersion = "PROD 11-28AUG2025@10:00.AM";
+  const currentVersion = "PROD 1.5.2 - 02FEB2026";
   const disconnectMonitorSubscription = useRef(null);
 
   const menu = [
