@@ -21,7 +21,7 @@
         "NSLocationWhenInUseUsageDescription": "We need access to location for Bluetooth scanning."
       },
       "supportsTablet": true,
-      "buildNumber": "11"
+      "buildNumber": "12"
     },
     "android": {
       "edgeToEdgeEnabled": true,
