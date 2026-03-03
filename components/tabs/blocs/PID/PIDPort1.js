@@ -24,27 +24,6 @@ const PIDPortOne = ({
   const PID_mode = ["Primary", "Override"];
   const PID_PVSource = ["LP", "TP", "CP", "Sales Flow", "Injection Flow"];
 
-  // handle change values
-  const handleChangePercent = (text, fieldName) => {
-    if (text) {
-      const validText = text.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-      // Ensure the length is 3
-      if (validText.length > 3) {
-        Toast.show({
-          type: "error",
-          text1: "Warning",
-          text2: "The max value must be 3 digits",
-          visibilityTime: 3000,
-        });
-        dispatchPID({ [fieldName]: "" });
-      } else {
-        dispatchPID({ [fieldName]: validText });
-      }
-    } else {
-      dispatchPID({ [fieldName]: "" });
-    }
-  };
-
   const handleSendPIDSettings = async () => {
     if (
       PID.pidOneSP === "" ||

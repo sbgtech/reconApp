@@ -24,7 +24,7 @@ export class HandleChange {
   static handleChanges3Digits = (text, fieldName, dispatch) => {
     if (text) {
       const validText = text.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-      // Ensure the length is 4
+      // Ensure the length is 3
       if (validText.length > 3) {
         Toast.show({
           type: "error",

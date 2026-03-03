@@ -22,6 +22,7 @@ import TestTab from "./components/tabs/TestTab";
 import TriggerTab from "./components/tabs/TriggerTab";
 import PIDTab from "./components/tabs/PIDTab";
 import AlarmTab from "./components/tabs/AlarmTab";
+import RFCTab from "./components/tabs/RFCTab";
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
@@ -87,6 +88,7 @@ export default function App() {
         <Stack.Screen name="Statistics" component={StatisticsTab} />
         <Stack.Screen name="Trigger" component={TriggerTab} />
         <Stack.Screen name="PID" component={PIDTab} />
+        <Stack.Screen name="RFC" component={RFCTab} />
         <Stack.Screen name="Alarm" component={AlarmTab} />
         <Stack.Screen name="Test" component={TestTab} />
       </Stack.Navigator>

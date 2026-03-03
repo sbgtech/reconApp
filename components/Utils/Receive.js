@@ -727,6 +727,111 @@ export class Receive {
     });
   }
 
+  // function listen to receive data for PID page
+  static async RFCReceivedData(device, dispatchRFC, setLoading, setTitle) {
+    new Promise((resolve, reject) => {
+      setLoading(true);
+      setTitle("Loading...");
+      let timeout;
+      let subscription;
+      let dataReceived = false;
+      const cleanup = () => {
+        clearTimeout(timeout);
+        if (subscription && typeof subscription.remove === "function") {
+          subscription.remove();
+        }
+        setTimeout(() => setLoading(false), 400);
+      };
+      timeout = setTimeout(() => {
+        if (!dataReceived) {
+          cleanup();
+          console.log("Data not received within 7 seconds (PID)");
+          Toast.show({
+            type: "error",
+            text1: "Warning",
+            text2: "No received data",
+            visibilityTime: 3000,
+          });
+          reject("Timeout: No PID data received");
+        }
+      }, 7000);
+
+      subscription = device?.monitorCharacteristicForService(
+        UART_SERVICE_UUID,
+        UART_RX_CHARACTERISTIC_UUID,
+        (error, characteristic) => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
+          try {
+            const str = Buffer.from(characteristic.value, "base64").toString(
+              "utf-8"
+            );
+            const firstIndexValue = str.charAt(0);
+            const pageIndex = Number(str.charAt(1));
+            const lastIndexValue = str[str.length - 2];
+
+            if (
+              firstIndexValue === "[" &&
+              lastIndexValue === "]" &&
+              pageIndex === 9
+            ) {
+              const msg = JSON.parse(str);
+              console.log(msg)
+              dispatchRFC({
+                rfcPID: msg[4],
+                rfcDiffPressure: msg[5],
+                rfcStaticPresure: msg[6],
+                rfcFlowRate: msg[8],
+                rfcVolumeToday: msg[9],
+                rfcVolumeYesterday: msg[10],
+                rfcAccVol: msg[11],
+                rfcCasingPressure: msg[13],
+                //
+                rfcPidSP: msg[14],
+                rfcPidKP: msg[15],
+                rfcPidKI: msg[16],
+                rfcPidKD: msg[17],
+                rfcPidINIT: msg[18],
+                rfcPidDB: msg[19],
+                rfcPidLL: msg[20],
+                //
+                rfcKickOff1EnableIndex: msg[21],
+                rfcKickOff1Period: msg[22],
+                rfcKickOff1CPStep: msg[23],
+                rfcKickOff1CPMax: msg[24],
+                rfcKickOff1mAStep: msg[25],
+                rfcKickOff2EnableIndex: msg[26],
+                rfcKickOff2Period: msg[27],
+                rfcKickOff2CPStep: msg[28],
+                rfcKickOff2CPMax: msg[29],
+                rfcKickOff2mAStep: msg[30],
+                //
+                CPTypeIndex: msg[31],
+                CPSensorMax: msg[32],
+                CPSensorMin: msg[33],
+                CPVoltageMax: msg[34],
+                CPVoltageMin: msg[35],
+              });
+              dataReceived = true;
+              cleanup();
+              resolve(true);
+              if (subscription?.remove) subscription.remove();
+            }
+          } catch (err) {
+            console.log("Error parsing RFC data:", err);
+            // We continue listening in case of parse issues
+          }
+        }
+      );
+    }).catch((err) => {
+      console.log("Error receiving RFC data:", err);
+      return false;
+    });
+  }
+
   // function listen to receive data for test page
   static async TestReceivedData(device, setters) {
     const { setDataArray, setLoading, setDataReceived } = setters;

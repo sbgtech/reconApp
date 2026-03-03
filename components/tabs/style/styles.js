@@ -480,7 +480,7 @@ export const styles = {
   }),
   // SettingsTab.js
   inputContainer: {
-    paddingHorizontal: 5,
+    padding: 5,
   },
   // SettingsTab.js
   containerBtnText: {
@@ -572,6 +572,12 @@ export const styles = {
     height: width < 600 ? 34 : width < 800 ? 33 : width < 950 ? 40 : 40,
   },
   /* --------------------------------------- */
+  // RFCTotalizerData.js
+    rfcTotalizerWrapper: (width) => ({
+    ...styles.statusWrapper(width),
+    width: "auto"
+  }),
+    /* ------------------------------------------- */
   // TestTab.js
   containerTestTab: {
     flex: 1,

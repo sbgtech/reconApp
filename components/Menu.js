@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   ScrollView,
   View,
   useWindowDimensions,
   Text,
   Alert,
-  StyleSheet,
   Modal,
   TextInput,
   BackHandler, // Import BackHandler for Android hardware back button
@@ -24,10 +23,12 @@ import {
   setCustomDeviceName,
 } from "./Utils/deviceNameStorage";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const bleManager = new BleManager();
 
 const Menu = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation(); // Use useNavigation hook
   const { width } = useWindowDimensions();
   const [wellName, setWellName] = useState(null);
@@ -70,6 +71,10 @@ const Menu = () => {
       tabName: "Alarm",
     },
     {
+      iconName: "speedometer-outline",
+      tabName: "RFC",
+    },
+    {
       iconName: "hammer-outline",
       tabName: "Test",
     },
@@ -107,7 +112,10 @@ const Menu = () => {
       case 6:
         navigation.navigate("Alarm", { connectedDevice: connectedDevice });
         break;
-      case 7:
+        case 7:
+          navigation.navigate("RFC", { connectedDevice: connectedDevice });
+        break;
+      case 8:
         navigation.navigate("Test", { connectedDevice: connectedDevice });
         break;
       default:
@@ -448,7 +456,7 @@ const Menu = () => {
           </View>
         </View>
       </Modal>
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
         {menu.map((m, index) => (
           <MenuItem
             key={index}

@@ -16,6 +16,11 @@
     "label": "RECON Mobile",
     "ios": {
       "bundleIdentifier": "com.app.welltimer",
+      "icon": {
+        "dark": "./assets/images/ios-dark.png",
+        "light": "./assets/images/ios-light.png",
+        "tinted": "./assets/images/ios-tinted.png"
+      },
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "We need access to Bluetooth to communicate with devices.",
         "NSLocationWhenInUseUsageDescription": "We need access to location for Bluetooth scanning."
@@ -25,6 +30,11 @@
     },
     "android": {
       "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
       "package": "com.reconmobile",
       "permissions": [
         "android.permission.BLUETOOTH",
@@ -37,7 +47,22 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["react-native-ble-plx"],
+    "plugins": [
+      "react-native-ble-plx",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon-dark.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#ffffff"
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "b2ecd618-d615-4481-bc37-42915267f220"

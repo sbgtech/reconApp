@@ -142,9 +142,9 @@ const SettingsTab = ({ route }) => {
   const card7 = (
     <CP
       connectedDevice={connectedDevice}
-      settings={settings}
-      dispatchSettings={dispatchSettings}
-      fetchDataSettings={fetchDataSettings}
+      data={settings}
+      dispatchData={dispatchSettings}
+      fetchData={fetchDataSettings}
       setLoading={setLoading}
     />
   );

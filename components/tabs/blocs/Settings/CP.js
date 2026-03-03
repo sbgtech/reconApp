@@ -13,10 +13,18 @@ import { Receive } from "../../../Utils/Receive";
 
 const CP = ({
   connectedDevice,
-  settings,
-  dispatchSettings,
-  fetchDataSettings,
+  data,
+  dispatchData,
+  fetchData,
   setLoading,
+  registers = {
+    pageNumber: 3,
+    CPTypeIndex: 103,
+    CPSensorMax: 104,
+    CPSensorMin: 105,
+    CPVoltageMax: 120,
+    CPVoltageMin: 121
+  }
 }) => {
   const { width } = useWindowDimensions();
 
@@ -25,10 +33,10 @@ const CP = ({
   // send array of CP values to device
   const handleSendCP = async () => {
     if (
-      settings.CPSensorMax === "" ||
-      settings.CPSensorMin === "" ||
-      settings.CPVoltageMax === "" ||
-      settings.CPVoltageMin === ""
+      data.CPSensorMax === "" ||
+      data.CPSensorMin === "" ||
+      data.CPVoltageMax === "" ||
+      data.CPVoltageMin === ""
     ) {
       Toast.show({
         type: "error",
@@ -37,14 +45,14 @@ const CP = ({
         visibilityTime: 3000,
       });
       return; // Exit the function if validation fails
-    } else if (Number(settings.CPSensorMin) > Number(settings.CPSensorMax)) {
+    } else if (Number(data.CPSensorMin) > Number(data.CPSensorMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
         text2: "The CP Sensor max must be more than CP Sensor min",
         visibilityTime: 4000,
       });
-    } else if (Number(settings.CPVoltageMin) > Number(settings.CPVoltageMax)) {
+    } else if (Number(data.CPVoltageMin) > Number(data.CPVoltageMax)) {
       Toast.show({
         type: "error",
         text1: "Warning",
@@ -54,18 +62,19 @@ const CP = ({
     } else {
       try {
         const arr = JSON.stringify([
-          3,
-          103,
-          settings.CPTypeIndex,
-          104,
-          Number(settings.CPSensorMax),
-          105,
-          Number(settings.CPSensorMin),
-          120,
-          Number(settings.CPVoltageMax * 10),
-          121,
-          Number(settings.CPVoltageMin * 10),
+          registers.pageNumber,
+          registers.CPTypeIndex,
+          data.CPTypeIndex,
+          registers.CPSensorMax,
+          Number(data.CPSensorMax),
+          registers.CPSensorMin,
+          Number(data.CPSensorMin),
+          registers.CPVoltageMax,
+          Number(data.CPVoltageMax * 10),
+          registers.CPVoltageMin,
+          Number(data.CPVoltageMin * 10),
         ]);
+        console.log(arr)
         const buffer = Buffer.from(arr + "\n", "utf-8");
         await connectedDevice?.writeCharacteristicWithResponseForService(
           UART_SERVICE_UUID,
@@ -80,7 +89,7 @@ const CP = ({
         });
         setLoading(true);
         await Receive.delay(2000);
-        await fetchDataSettings();
+        await fetchData();
       } catch (error) {
         console.log(
           "Error with writeCharacteristicWithResponseForService :",
@@ -97,18 +106,18 @@ const CP = ({
         <Dropdown
           dropdownTitle={"Select option"}
           list={CP_type}
-          selectedIndex={settings.CPTypeIndex}
-          setSelectedIndex={(index) => dispatchSettings({ CPTypeIndex: index })}
+          selectedIndex={data.CPTypeIndex}
+          setSelectedIndex={(index) => dispatchData({ CPTypeIndex: index })}
         />
         <Text style={styles.titleSettings(width)}>CP Sensor max (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={settings.CPSensorMax?.toString() || ""}
+          value={data.CPSensorMax?.toString() || ""}
           onChangeText={(text) =>
             HandleChange.handleChanges4Digits(
               text,
               "CPSensorMax",
-              dispatchSettings
+              dispatchData
             )
           }
           keyboardType="numeric"
@@ -116,29 +125,29 @@ const CP = ({
         <Text style={styles.titleSettings(width)}>CP Sensor min (PSI) :</Text>
         <TextInput
           style={styles.inputSettings(width)}
-          value={settings.CPSensorMin?.toString() || ""}
+          value={data.CPSensorMin?.toString() || ""}
           onChangeText={(text) =>
             HandleChange.handleChanges4Digits(
               text,
               "CPSensorMin",
-              dispatchSettings
+              dispatchData
             )
           }
           keyboardType="numeric"
         />
-        {settings.CPTypeIndex !== null && settings?.CPTypeIndex === 0 && (
+        {data.CPTypeIndex !== null && data?.CPTypeIndex === 0 && (
           <View>
             <Text style={styles.titleSettings(width)}>
               CP voltage max (V) :
             </Text>
             <TextInput
               style={styles.inputSettings(width)}
-              value={settings.CPVoltageMax?.toString() || ""}
+              value={data.CPVoltageMax?.toString() || ""}
               onChangeText={(text) =>
                 HandleChange.handleChangesVoltage(
                   text,
                   "CPVoltageMax",
-                  dispatchSettings
+                  dispatchData
                 )
               }
               keyboardType="numbers-and-punctuation"
@@ -148,12 +157,12 @@ const CP = ({
             </Text>
             <TextInput
               style={styles.inputSettings(width)}
-              value={settings.CPVoltageMin?.toString() || ""}
+              value={data.CPVoltageMin?.toString() || ""}
               onChangeText={(text) =>
                 HandleChange.handleChangesVoltage(
                   text,
                   "CPVoltageMin",
-                  dispatchSettings
+                  dispatchData
                 )
               }
               keyboardType="numbers-and-punctuation"
