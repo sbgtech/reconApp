@@ -8,11 +8,6 @@
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "label": "RECON Mobile",
     "ios": {
       "bundleIdentifier": "com.app.welltimer",

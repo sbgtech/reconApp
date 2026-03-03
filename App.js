@@ -24,6 +24,12 @@ import PIDTab from "./components/tabs/PIDTab";
 import AlarmTab from "./components/tabs/AlarmTab";
 import RFCTab from "./components/tabs/RFCTab";
 
+// Configure the fade animation (duration in ms)
+SplashScreen.setOptions({
+  duration: 800,
+  fade: true,
+});
+
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
 export default function App() {
@@ -35,7 +41,7 @@ export default function App() {
         await Font.loadAsync(Entypo.font);
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
       } catch (e) {
         console.warn(e);
       } finally {
