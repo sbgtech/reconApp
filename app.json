@@ -37,7 +37,7 @@
         "android.permission.BLUETOOTH_CONNECT",
         "NOTIFICATIONS"
       ],
-      "versionCode": 1
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"
