@@ -2,7 +2,7 @@
   "expo": {
     "name": "RECON Mobile",
     "slug": "MyBleApp",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "platforms": ["ios", "android"],
     "orientation": "default",
     "icon": "./assets/logo.png",
@@ -21,7 +21,7 @@
         "NSLocationWhenInUseUsageDescription": "We need access to location for Bluetooth scanning."
       },
       "supportsTablet": true,
-      "buildNumber": "12"
+      "buildNumber": "1"
     },
     "android": {
       "edgeToEdgeEnabled": true,
@@ -37,7 +37,7 @@
         "android.permission.BLUETOOTH_CONNECT",
         "NOTIFICATIONS"
       ],
-      "versionCode": 7
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
